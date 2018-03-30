@@ -20,7 +20,7 @@ namespace LinkShortener.Models.Database
         protected AbstractDatabase()
         {
             mutex = new Mutex(false);
-            connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+            connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
             createDB();
         }
 
@@ -35,7 +35,7 @@ namespace LinkShortener.Models.Database
 
             if(connection == null)
             {
-                connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+                connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
             }
 
             //connection.
@@ -50,11 +50,11 @@ namespace LinkShortener.Models.Database
                 }
                 catch (MySqlException e)
                 {
-                    if (e.Number == 1007)//Database already exists, no need to continure further
+                    if (e.Number == 1007)//Database already exists, no need to continue further
                     {
                         Debug.consoleMsg("Database already exists.");
                         closeConnection();
-                        connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+                        connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
                         return;
                     }
                     Debug.consoleMsg("Unable to create database"
@@ -84,7 +84,7 @@ namespace LinkShortener.Models.Database
                 }
 
                 closeConnection();
-                connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+                connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
             }
         }
 

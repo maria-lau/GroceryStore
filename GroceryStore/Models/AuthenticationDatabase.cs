@@ -1,8 +1,4 @@
-﻿using Messages.Database;
-using Messages.NServiceBus.Commands;
-using Messages.ServiceBusRequest;
-
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 
 using System;
 
@@ -32,6 +28,48 @@ namespace AuthenticationService.Database
             return instance;
         }
 
+        public bool LogInAttempt(string usernameData, string passwordData)
+        {
+            bool result = false;
+
+            if (openConnection())
+            {
+
+                try
+                {
+                    MySqlCommand command = connection.CreateCommand();
+                    command.CommandText = "SELECT FROM user WHERE username = @usernameData AND password = @passwordData";
+                    command.Parameters.AddWithValue("@usernameData", usernameData);
+                    command.Parameters.AddWithValue("@passwordData", passwordData);
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if(reader.count == 1)
+                    {
+                        result = true;
+                        GroceryStore.Models.Global.setUser(usernameData);
+                    }
+                    
+                    return result;
+                }
+                catch (MySqlException e)
+                {
+                    Messages.Debug.consoleMsg("Unable to log in user into system." +
+                        " Error :" + e.Number + e.Message);
+                    Messages.Debug.consoleMsg("The query was:" + command.CommandText);
+                    message = e.Message;
+                }
+                catch (Exception e)
+                {
+                    Messages.Debug.consoleMsg("Unable to log in user into database." +
+                        " Error:" + e.Message);
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+        }
         /// <summary>
         /// Attempts to insert a new user account into the database
         /// </summary>
@@ -141,7 +179,7 @@ namespace AuthenticationService.Database
         /// Both of these properties are required in order for both the base class and the
         /// table definitions below to have access to the variable.
         /// </summary>
-        private const String dbname = "callitlocaldb";
+        private const String dbname = "grocerydb";
         public override String databaseName { get; } = dbname;
 
         /// <summary>
