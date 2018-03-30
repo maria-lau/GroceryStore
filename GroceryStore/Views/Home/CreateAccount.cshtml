@@ -1,47 +1,55 @@
-﻿<!--
-    This is the html page that opens when a user navigates
-    to the create an account page
--->
+﻿
 
-<script type="text/javascript" src="~/Scripts/Authentication/AuthenticationFunctions.js"></script>
+<script type="text/javascript" src="~/Scripts/AuthenticationFunctions.js"></script>
 
 
 <!-- The remainder of this file is to be completed by students in milestone 2 -->
-
-<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 <div class="w3-container w3-display-middle">
     <h1 class="w3-animate-left">
-        <a style=color:#785ff4>Create </a><a style=color:#1185f9>An </a><a style=color:#3ae2fc>Account</a>
+        <a style=color:#785ff4>Create </a><a style=color:#1185f9>Customer </a><a style=color:#3ae2fc>Account</a>
     </h1>
     <p id="hi"></p>
-    @using (Html.BeginForm("CreateAccountPost", "Authentication", FormMethod.Post,
+    @using (Html.BeginForm("CreateAccountPost", "Home", FormMethod.Post,
         new { id = "createAccountForm", onsubmit = "return validateCreateAccountForm()" }))
     {
     <div class="container" style="text-align:center;">
-        <label>Username:</label><br />
-        @Html.TextBox("usernameData")<br />
 
-        <label>Password:</label><br />
-        @Html.Password("passwordData")<br />
+        @Html.TextBox("usernameData", null, new { @placeholder = "Enter Username" })<br />
 
-        <label>Address:</label><br />
-        @Html.TextBox("addressData")<br />
+        @Html.Password("passwordData", null, new { @placeholder = "Enter Password" })<br />
 
-        <label>Email:</label><br />
-        @Html.TextBox("emailData")<br />
+        @Html.TextBox("firstName", null, new { @placeholder = "Enter First name" })<br />
 
-        <label>Phone:</label><br />
-        @Html.TextBox("phoneData")<br />
+        @Html.TextBox("lastName", null, new { @placeholder = "Enter Last Name" })<br />
 
-        <label>Account Type:  </label>
-        <select name="accountType">
-            <option value="user">User</option>
-            <option value="business">Business</option>
-            <option value="notspecified">Other</option>
+        @Html.TextBox("street", null, new { @placeholder = "Enter Street Address" })<br />
+
+        @Html.TextBox("city", null, new { @placeholder = "Enter City Name" })<br />
+
+        <select name="province">
+            <option value="Alberta">Alberta</option>
+            <option value="British Columbia">British Columbia</option>
+            <option value="Manitoba">Manitoba</option>
+            <option value="New Brunswick">New Brunswick</option>
+            <option value="Newfoundland">Newfoundland</option>
+            <option value="Northwest Territories">Northwest Territories</option>
+            <option value="Nova Scotia">Nova Scotia</option>
+            <option value="Nunavut">Nunavut</option>
+            <option value="Ontario">Ontario</option>
+            <option value="Prince Edward Island">Prince Edward Island</option>
+            <option value="Quebec">Quebec</option>
+            <option value="Saskatchewan">Saskatchewan</option>
+            <option value="Yukon">Yukon</option>
         </select>
-        <br />
+
+        @Html.TextBox("postalCode", null, new { @placeholder = "Enter Postal Code" })<br />
+
+        @Html.TextBox("emailData", null, new { @placeholder = "Enter E-Mail Address" })<br />
+
+        @Html.TextBox("phoneData", null, new { @placeholder = "Enter Phone Number" })<br />
+
         <br />
     </div>
         <div style="text-align:center;">

@@ -1,25 +1,14 @@
-﻿<!--
-    This is the html page that opens when a user navigates or is redirected
-    to the log in page
--->
+﻿
 
-<script type="text/javascript" src="~/Scripts/Authentication/AuthenticationFunctions.js"></script>
+<script type="text/javascript" src="~/Scripts/AuthenticationFunctions.js"></script>
 
-<!-- The remainder of this file is to be completed by students in milestone 2 -->
-
-@*@{
-    var response = ViewData["response"];
-}*@
-
-
-<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 <div class="w3-container w3-display-middle">
     <h1 class="w3-animate-left">
-        <a style=color:#785ff4>Call </a><a style=color:#1185f9>it </a><a style=color:#3ae2fc>Local</a> Login Page
+        <a style=color:#785ff4>Fresh </a><a style=color:#1185f9>Direct </a><a style=color:#3ae2fc>Login</a> Page
     </h1>
-    @using (Html.BeginForm("Login", "Authentication", FormMethod.Post,
+    @using (Html.BeginForm("Login", "Home", FormMethod.Post,
         new { id = "loginForm", onsubmit = "return validateLoginForm()" }))
     {
         <div class="container" style="text-align:center;">
@@ -28,15 +17,10 @@
 
         </div>
         <div style="text-align:center;">
-            <input type="submit" value="Login" style="float: none; background-color: #785ff4;color: white; padding: 10px 15px; margin: 10px 0; border: none; cursor: pointer; width: 200px; height: 45px"/>
-            <a href="/Authentication/CreateAccount"><button type="button" class="createbtn">Create New Account</button></a>
+            <input type="submit" value="Login" style="float: none; background-color: #785ff4;color: white; padding: 10px 15px; margin: 10px 0; border: none; cursor: pointer; width: 200px; height: 45px" />
+            <a href="/Home/CreateAccount"><button type="button" class="createbtn">Create New Account</button></a>
         </div>
     }
-        @*<p>
-            Login Message:
-            <br \ />
-                @response
-        </p>*@
 </div>
 
 <style>

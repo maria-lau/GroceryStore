@@ -147,12 +147,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\AbstractDatabase.cs" />
-    <Compile Include="Models\AuthenticationDatabase.cs" />
-    <Compile Include="Models\Column.cs" />
-    <Compile Include="Models\Debug.cs" />
-    <Compile Include="Models\LinkDatabase.cs" />
-    <Compile Include="Models\Table.cs" />
+    <Compile Include="Models\Globals.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +157,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\AuthenticationFunctions.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
