@@ -1,0 +1,112 @@
+﻿<!--
+    This is the html page that opens when a user navigates
+    to the create an account page
+-->
+
+<script type="text/javascript" src="~/Scripts/Authentication/AuthenticationFunctions.js"></script>
+
+
+<!-- The remainder of this file is to be completed by students in milestone 2 -->
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<div class="w3-container w3-display-middle">
+    <h1 class="w3-animate-left">
+        <a style=color:#785ff4>Create </a><a style=color:#1185f9>An </a><a style=color:#3ae2fc>Account</a>
+    </h1>
+    <p id="hi"></p>
+    @using (Html.BeginForm("CreateAccountPost", "Authentication", FormMethod.Post,
+        new { id = "createAccountForm", onsubmit = "return validateCreateAccountForm()" }))
+    {
+    <div class="container" style="text-align:center;">
+        <label>Username:</label><br />
+        @Html.TextBox("usernameData")<br />
+
+        <label>Password:</label><br />
+        @Html.Password("passwordData")<br />
+
+        <label>Address:</label><br />
+        @Html.TextBox("addressData")<br />
+
+        <label>Email:</label><br />
+        @Html.TextBox("emailData")<br />
+
+        <label>Phone:</label><br />
+        @Html.TextBox("phoneData")<br />
+
+        <label>Account Type:  </label>
+        <select name="accountType">
+            <option value="user">User</option>
+            <option value="business">Business</option>
+            <option value="notspecified">Other</option>
+        </select>
+        <br />
+        <br />
+    </div>
+        <div style="text-align:center;">
+            <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 200px;" value="Create Account" />
+        </div>
+    }
+    </div>
+
+<style>
+
+    form {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0 auto;
+    }
+
+    input, textarea {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        width: 700px;
+        height: 40px;
+    }
+
+        input:focus, textarea:focus {
+            border-color: aquamarine;
+        }
+
+        /* Full-width inputs */
+        input[type=text], input[type=password], input[type=tel], input[type=email] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+    /* Add padding to containers */
+    .container {
+        padding: 16px;
+    }
+
+    a:hover {
+        color: #634cf7;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    h1 {
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+    }
+
+    p2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p3 {
+        position: absolute;
+        bottom: 100px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>
