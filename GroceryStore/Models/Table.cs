@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LinkShortener.Models.Database
+namespace GroceryStore.Models.Database
 {
 
     /// <summary>

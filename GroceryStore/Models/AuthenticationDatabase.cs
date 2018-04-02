@@ -75,20 +75,24 @@ namespace AuthenticationService.Database
         /// </summary>
         /// <param name="accountInfo">Contains information about the </param>
         /// <returns>A message indicating the result of the attempt</returns>
-        public ServiceBusResponse insertNewUserAccount(CreateAccount accountInfo)
+        public bool insertNewUserAccount(CreateAccount accountInfo)
         {
             bool result = false;
             string message = "";
             if(openConnection() == true)
             {
-                string query = @"INSERT INTO user(username, password, address, phonenumber, email, type) " +
-                    @"VALUES('" + accountInfo.username + @"', '" + accountInfo.password + 
-                    @"', '" + accountInfo.address + @"', '" + accountInfo.phonenumber + 
-                    @"', '" + accountInfo.email + @"', '" + accountInfo.type.ToString() + @"');";
+                MySqlCommand command = connection.CreateCommand();
+                command.CommandText = "INSERT INTO user VALUES(@usernameD, @passwordD, @addressD, @FnameD, @LNameD, @typeD)";
+                command.Parameters.AddWithValue("@usernameD", accountinfo.username);
+                command.Parameters.AddWithValue("@passwordD", accountinfo.password);
+                command.Parameters.AddWithValue("@addressD", accountinfo.address);
+                command.Parameters.AddWithValue("@FnameD", accountinfo.FName);
+                command.Parameters.AddWithValue("@LNameD", accountinfo.LName);
+                command.Parameters.AddWithValue("@typeD", accountinfo.type);
+                MySqlDataReader reader = command.ExecuteReader();
 
                 try
                 {
-                    MySqlCommand command = new MySqlCommand(query, connection);
                     command.ExecuteNonQuery();
                     result = true;
                 }
@@ -114,8 +118,7 @@ namespace AuthenticationService.Database
             {
                 message = "Unable to connect to database";
             }
-
-            return new ServiceBusResponse(result, message);
+            return result;
         }
 
         /// <summary>
@@ -226,19 +229,18 @@ namespace AuthenticationService.Database
                         ),
                         new Column
                         (
-                            "phonenumber", "VARCHAR(10)",
+                            "Fname", "VARCHAR(20)",
                             new string[]
                             {
                                 "NOT NULL"
                             }, false
                         ),
-                        new Column
+                         new Column
                         (
-                            "email", "VARCHAR(100)",
+                            "LName", "VARCHAR(20)",
                             new string[]
                             {
-                                "NOT NULL",
-                                "UNIQUE"
+                                "NOT NULL"
                             }, false
                         ),
                         new Column
