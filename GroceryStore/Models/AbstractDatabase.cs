@@ -1,11 +1,8 @@
-﻿
-
-using MySql.Data.MySqlClient;
-
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Threading;
 
-namespace GroceryStore.Models.Database
+namespace GroceryStore.Models
 {
     /// <summary>
     /// This class is used as a base class for the creation and deletion of a database.
@@ -33,7 +30,7 @@ namespace GroceryStore.Models.Database
             MySqlCommand command;
             commandString = "CREATE DATABASE " + databaseName + ";";
 
-            if(connection == null)
+            if (connection == null)
             {
                 connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
             }
@@ -50,7 +47,7 @@ namespace GroceryStore.Models.Database
                 }
                 catch (MySqlException e)
                 {
-                    if (e.Number == 1007)//Database already exists, no need to continue further
+                    if (e.Number == 1007)//Database already exists, no need to continure further
                     {
                         Debug.consoleMsg("Database already exists.");
                         closeConnection();

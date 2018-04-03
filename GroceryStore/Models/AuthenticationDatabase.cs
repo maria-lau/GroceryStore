@@ -1,6 +1,4 @@
-﻿using GroceryStore.Models.Database;
-using MySql.Data.MySqlClient;
-
+﻿using MySql.Data.MySqlClient;
 using System;
 
 namespace GroceryStore.Models
@@ -14,7 +12,7 @@ namespace GroceryStore.Models
         /// <summary>
         /// Private default constructor to enforce the use of the singleton design pattern
         /// </summary>
-        private AuthenticationDatabase(){ }
+        private AuthenticationDatabase() { }
 
         /// <summary>
         /// Gets the singleton instance of the database
@@ -29,132 +27,31 @@ namespace GroceryStore.Models
             return instance;
         }
 
-        public bool LogInAttempt(string usernameData, string passwordData)
+        public Response Login(string username, string password)
         {
             bool result = false;
+            string message = "";
+            string query = @"SELECT * FROM " + databaseName + @".user " +
+                @"WHERE username='" + username + @"' " +
+                @"AND password='" + password + @"';";
 
             if (openConnection())
             {
 
                 try
                 {
-                    MySqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT FROM user WHERE username = @usernameData AND password = @passwordData";
-                    command.Parameters.AddWithValue("@usernameData", usernameData);
-                    command.Parameters.AddWithValue("@passwordData", passwordData);
-                    MySqlDataReader reader = command.ExecuteReader();
-
-                    if(reader.count == 1)
-                    {
-                        result = true;
-                        GroceryStore.Models.Global.setUser(usernameData);
-                    }
-                    
-                    return result;
-                }
-                catch (MySqlException e)
-                {
-                    Messages.Debug.consoleMsg("Unable to log in user into system." +
-                        " Error :" + e.Number + e.Message);
-                    Messages.Debug.consoleMsg("The query was:" + command.CommandText);
-                    message = e.Message;
-                }
-                catch (Exception e)
-                {
-                    Messages.Debug.consoleMsg("Unable to log in user into database." +
-                        " Error:" + e.Message);
-                    message = e.Message;
-                }
-                finally
-                {
-                    closeConnection();
-                    return result;
-                }
-
-            }
-        }
-        /// <summary>
-        /// Attempts to insert a new user account into the database
-        /// </summary>
-        /// <param name="accountInfo">Contains information about the </param>
-        /// <returns>A message indicating the result of the attempt</returns>
-        public bool insertNewUserAccount(CreateAccount accountInfo)
-        {
-            bool result = false;
-            string message = "";
-            if(openConnection() == true)
-            {
-                MySqlCommand command = connection.CreateCommand();
-                command.CommandText = "INSERT INTO user VALUES(@usernameD, @passwordD, @addressD, @FnameD, @LNameD, @typeD)";
-                command.Parameters.AddWithValue("@usernameD", accountinfo.username);
-                command.Parameters.AddWithValue("@passwordD", accountinfo.password);
-                command.Parameters.AddWithValue("@addressD", accountinfo.address);
-                command.Parameters.AddWithValue("@FnameD", accountinfo.FName);
-                command.Parameters.AddWithValue("@LNameD", accountinfo.LName);
-                command.Parameters.AddWithValue("@typeD", accountinfo.type);
-                MySqlDataReader reader = command.ExecuteReader();
-
-                try
-                {
-                    command.ExecuteNonQuery();
-                    result = true;
-                }
-                catch(MySqlException e)
-                {
-                    Messages.Debug.consoleMsg("Unable to complete insert new user into database." +
-                        " Error :" + e.Number + e.Message);
-                    Messages.Debug.consoleMsg("The query was:" + query);
-                    message = e.Message;
-                }
-                catch (Exception e)
-                {
-                    Messages.Debug.consoleMsg("Unable to Unable to complete insert new user into database." +
-                        " Error:" + e.Message);
-                    message = e.Message;
-                }
-                finally
-                {
-                    closeConnection();
-                }
-            }
-            else
-            {
-                message = "Unable to connect to database";
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// This function is used to check and see if the given username and password correspond
-        /// to an existing user account.
-        /// </summary>
-        /// <param name="username">The username to check the database for</param>
-        /// <param name="password">The password to check the database for</param>
-        /// <returns>True if the info corresponds to an entry in the database, false otherwise</returns>
-        public ServiceBusResponse isValidUserInfo(string username, string password)
-        {
-            string query = @"SELECT * FROM " + databaseName + @".user " +
-                @"WHERE username='" + username + @"' " +
-                @"AND password='" + password + @"';";
-            
-            bool result = false;
-            string message = "";
-
-            if (openConnection() == true)
-            {
-                try
-                {
                     MySqlCommand command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
                     result = dataReader.Read();
                     dataReader.Close();
-                    if(result == true)
+                    if (result == true)
                     {
                         message = "Login successful.";
+                        Globals.setUser(username);
                     }
                     else
                     {
-                        message = "Login unsuccessful.";
+                        message = "Incorrect username and/or password. Please try again.";
                     }
                 }
                 catch (Exception e)
@@ -171,7 +68,72 @@ namespace GroceryStore.Models
                 result = false;
                 message = "Could not connect to database.";
             }
-            return new ServiceBusResponse(result, message);
+            return new Response(result, message);
+        }
+        /// <summary>
+        /// Attempts to insert a new user account into the database
+        /// </summary>
+        /// <param name="accountInfo">Contains information about the </param>
+        /// <returns>A message indicating the result of the attempt</returns>
+        public Response insertNewUserAccount(UserAccount accountInfo)
+        {
+            bool result = false;
+            string message = "";
+            if (openConnection() == true)
+            {
+                try
+                {
+                    // check if username is unique
+                    string query = @"SELECT * FROM " + databaseName + @".user " + @"WHERE username='" + accountInfo.username + @"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (dataReader.Read())
+                    {
+                        // username exists
+                        dataReader.Close();
+                        result = false;
+                        message = "Username is already taken. Please try another.";
+                        return new Response(result, message);
+                    }
+                    dataReader.Close();
+
+                    query = @"INSERT INTO " + dbname + @".user(username, password, fname, lname, street, city, province, postalcode, email, phone, type) " +
+                        @"VALUES('" + accountInfo.username + @"', '" + accountInfo.password +
+                        @"', '" + accountInfo.fname + @"', '" + accountInfo.lname +
+                        @"', '" + accountInfo.street + @"', '" + accountInfo.city +
+                        @"', '" + accountInfo.province + @"', '" + accountInfo.postalcode +
+                        @"', '" + accountInfo.email + @"', '" + accountInfo.phone + @"', '" + accountInfo.type + @"');";
+
+                
+                    command = new MySqlCommand(query, connection);
+                    command.ExecuteNonQuery();
+                    result = true;
+                    message = "Account created successfully.";
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete insert new user into database." +
+                        " Error :" + e.Number + e.Message);
+                    message = e.Message;
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to Unable to complete insert new user into database." +
+                        " Error:" + e.Message);
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                message = "Unable to connect to database";
+            }
+
+            return new Response(result, message);
         }
     }
 
@@ -185,7 +147,7 @@ namespace GroceryStore.Models
         /// Both of these properties are required in order for both the base class and the
         /// table definitions below to have access to the variable.
         /// </summary>
-        private const String dbname = "grocerydb";
+        private const String dbname = "userdb";
         public override String databaseName { get; } = dbname;
 
         /// <summary>
@@ -224,15 +186,7 @@ namespace GroceryStore.Models
                         ),
                         new Column
                         (
-                            "address", "VARCHAR(50)",
-                            new string[]
-                            {
-                                "NOT NULL"
-                            }, false
-                        ),
-                        new Column
-                        (
-                            "Fname", "VARCHAR(20)",
+                            "fname", "VARCHAR(30)",
                             new string[]
                             {
                                 "NOT NULL"
@@ -240,7 +194,55 @@ namespace GroceryStore.Models
                         ),
                          new Column
                         (
-                            "LName", "VARCHAR(20)",
+                            "lname", "VARCHAR(30)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                        new Column
+                        (
+                            "street", "VARCHAR(30)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                        new Column
+                        (
+                            "city", "VARCHAR(20)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                        new Column
+                        (
+                            "province", "VARCHAR(30)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                         new Column
+                        (
+                            "postalcode", "VARCHAR(7)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                          new Column
+                        (
+                            "email", "VARCHAR(50)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                           new Column
+                        (
+                            "phone", "VARCHAR(20)",
                             new string[]
                             {
                                 "NOT NULL"

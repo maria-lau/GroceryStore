@@ -1,9 +1,4 @@
 ﻿
-
-<script type="text/javascript" src="~/Scripts/AuthenticationFunctions.js"></script>
-
-
-<!-- The remainder of this file is to be completed by students in milestone 2 -->
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
 <div class="w3-container w3-display-middle">
@@ -16,17 +11,17 @@
     {
     <div class="container" style="text-align:center;">
 
-        @Html.TextBox("usernameData", null, new { @placeholder = "Enter Username" })<br />
+        @Html.TextBox("usernameData", null, new { @placeholder = "Enter Username", required = "required"})<br />
 
-        @Html.Password("passwordData", null, new { @placeholder = "Enter Password" })<br />
+        @Html.Password("passwordData", null, new { @placeholder = "Enter Password", required = "required" })<br />
 
-        @Html.TextBox("firstName", null, new { @placeholder = "Enter First name" })<br />
+        @Html.TextBox("firstName", null, new { @placeholder = "Enter First name", required = "required" })<br />
 
-        @Html.TextBox("lastName", null, new { @placeholder = "Enter Last Name" })<br />
+        @Html.TextBox("lastName", null, new { @placeholder = "Enter Last Name", required = "required" })<br />
 
-        @Html.TextBox("street", null, new { @placeholder = "Enter Street Address" })<br />
+        @Html.TextBox("street", null, new { @placeholder = "Enter Street Address", required = "required" })<br />
 
-        @Html.TextBox("city", null, new { @placeholder = "Enter City Name" })<br />
+        @Html.TextBox("city", null, new { @placeholder = "Enter City Name", required = "required" })<br />
 
         <select name="province" style="width: 100%; height: 40px; padding: 0px 20px; margin: 8px 0; display: inline-block;border: 1px solid #ccc;box-sizing: border-box;">
             <option value="Alberta">Alberta</option>
@@ -44,11 +39,11 @@
             <option value="Yukon">Yukon</option>
         </select>
 
-        @Html.TextBox("postalCode", null, new { @placeholder = "Enter Postal Code" })<br />
+        @Html.TextBox("postalCode", null, new { @placeholder = "Enter Postal Code", required = "required" })<br />
 
-        @Html.TextBox("emailData", null, new { @placeholder = "Enter E-Mail Address" })<br />
+        @Html.TextBox("emailData", null, new { @placeholder = "Enter E-Mail Address", required = "required" })<br />
 
-        @Html.TextBox("phoneData", null, new { @placeholder = "Enter Phone Number" })<br />
+        @Html.TextBox("phoneData", null, new { @placeholder = "Enter Phone Number", required = "required" })<br />
 
         <br />
     </div>

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GroceryStore.Models.Database
+namespace GroceryStore.Models
 {
-
     /// <summary>
     /// This class represents a table in a MySQL Database.
     /// </summary>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GroceryStore.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -28,18 +29,31 @@ namespace GroceryStore.Controllers
             return View("Login");
         }
 
+
         [HttpPost]
         public ActionResult Login(string usernameData, string passwordData)
         {
             string username = usernameData;
             string password = passwordData;
 
+            AuthenticationDatabase db = AuthenticationDatabase.getInstance();
+            Response loginresponse = db.Login(usernameData, passwordData);
 
-            return View("../Home/Index");
+            if (loginresponse.result)
+            {
+                Response.Write("<script>alert('" + loginresponse.response + "')</script>");
+                return View("../Home/Index");
+            }
+            else
+            {
+                Response.Write("<script>alert('" + loginresponse.response + "')</script>");
+                return View("Login");
+            }
         }
 
         public ActionResult LogOut()
         {
+            Globals.setUser("Log In");
             return View("Index");
         }
 
@@ -48,19 +62,31 @@ namespace GroceryStore.Controllers
             string street, string city, string province, string postalCode, string emailData, string phoneData)
         {
             //Get form data from HTML web page
+            UserAccount newaccount = new UserAccount();
+            newaccount.username = usernameData;
+            newaccount.password = passwordData;
+            newaccount.fname = firstName;
+            newaccount.lname = lastName;
+            newaccount.street = street;
+            newaccount.city = city;
+            newaccount.province = province;
+            newaccount.postalcode = postalCode;
+            newaccount.email = emailData;
+            newaccount.phone = phoneData;
 
-            bool accountCreation = true;
-            //Check if account created successfull
-            string message = "Account created successfully.";
-            if (accountCreation)
+            AuthenticationDatabase db = AuthenticationDatabase.getInstance();
+            Response createaccountresponse = db.insertNewUserAccount(newaccount);
+
+            //Check if account created successfully
+            if (createaccountresponse.result)
             {
-                Response.Write("<script>alert('" + message + "')</script>");
+                Globals.setUser(newaccount.username);
+                Response.Write("<script>alert('" + createaccountresponse.response + "')</script>");
                 return View("Index");
             }
             else
             {
-                message = "Failed to create account.";
-                Response.Write("<script>alert('" + message + "')</script>");
+                Response.Write("<script>alert('" + createaccountresponse.response + "')</script>");
                 return View("CreateAccount");
             }
         }
