@@ -1,8 +1,9 @@
-﻿using MySql.Data.MySqlClient;
+﻿using GroceryStore.Models.Database;
+using MySql.Data.MySqlClient;
 
 using System;
 
-namespace AuthenticationService.Database
+namespace GroceryStore.Models
 {
     /// <summary>
     /// This class is used to manipulate and read the Authentication Service's database in a safe and consistent manner.
@@ -67,7 +68,9 @@ namespace AuthenticationService.Database
                 finally
                 {
                     closeConnection();
+                    return result;
                 }
+
             }
         }
         /// <summary>
