@@ -36,7 +36,7 @@ namespace GroceryStore.Controllers
             string username = usernameData;
             string password = passwordData;
 
-            AuthenticationDatabase db = AuthenticationDatabase.getInstance();
+            UserDatabase db = UserDatabase.getInstance();
             Response loginresponse = db.Login(usernameData, passwordData);
 
             if (loginresponse.result)
@@ -74,7 +74,7 @@ namespace GroceryStore.Controllers
             newaccount.email = emailData;
             newaccount.phone = phoneData;
 
-            AuthenticationDatabase db = AuthenticationDatabase.getInstance();
+            UserDatabase db = UserDatabase.getInstance();
             Response createaccountresponse = db.insertNewUserAccount(newaccount);
 
             //Check if account created successfully
@@ -91,6 +91,80 @@ namespace GroceryStore.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult CreateEmployeeAccountPost(string usernameData, string passwordData, string firstName, string lastName,
+            string street, string city, string province, string postalCode, string emailData, string phoneData, int sin, string startdate, float hourlywage)
+        {
+            //Get form data from HTML web page
+            EmployeeAccount employeeaccount = new EmployeeAccount();
+            employeeaccount.username = usernameData;
+            employeeaccount.password = passwordData;
+            employeeaccount.fname = firstName;
+            employeeaccount.lname = lastName;
+            employeeaccount.street = street;
+            employeeaccount.city = city;
+            employeeaccount.province = province;
+            employeeaccount.postalcode = postalCode;
+            employeeaccount.email = emailData;
+            employeeaccount.phone = phoneData;
+            employeeaccount.sin = sin;
+            employeeaccount.startdate = startdate;
+            employeeaccount.hourlywage = hourlywage;
+
+            UserDatabase db = UserDatabase.getInstance();
+            Response createemployeeaccountresponse = db.insertNewEmployeeAccount(employeeaccount);
+
+            //Check if account created successfully
+            if (createemployeeaccountresponse.result)
+            {
+                Response.Write("<script>alert('" + createemployeeaccountresponse.response + "')</script>");
+                return View("ViewEmployees");
+            }
+            else
+            {
+                Response.Write("<script>alert('" + createemployeeaccountresponse.response + "')</script>");
+                return View("CreateEmployeeAccount");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CreateManagerAccountPost(string usernameData, string passwordData, string firstName, string lastName,
+            string street, string city, string province, string postalCode, string emailData, string phoneData, int sin, 
+            string startdate, float hourlywage, int storeid)
+        {
+            //Get form data from HTML web page
+            ManagerAccount manageraccount = new ManagerAccount();
+            manageraccount.username = usernameData;
+            manageraccount.password = passwordData;
+            manageraccount.fname = firstName;
+            manageraccount.lname = lastName;
+            manageraccount.street = street;
+            manageraccount.city = city;
+            manageraccount.province = province;
+            manageraccount.postalcode = postalCode;
+            manageraccount.email = emailData;
+            manageraccount.phone = phoneData;
+            manageraccount.sin = sin;
+            manageraccount.startdate = startdate;
+            manageraccount.hourlywage = hourlywage;
+            manageraccount.storeid = storeid;
+
+            UserDatabase db = UserDatabase.getInstance();
+            Response createmanageraccountresponse = db.insertNewManagerAccount(manageraccount);
+
+            //Check if account created successfully
+            if (createmanageraccountresponse.result)
+            {
+                Response.Write("<script>alert('" + createmanageraccountresponse.response + "')</script>");
+                return View("ViewEmployees");
+            }
+            else
+            {
+                Response.Write("<script>alert('" + createmanageraccountresponse.response + "')</script>");
+                return View("CreateManagerAccount");
+            }
+        }
+
         public ActionResult Index()
         {
             return View("Index");
@@ -99,6 +173,21 @@ namespace GroceryStore.Controllers
         public ActionResult CreateAccount()
         {
             return View("CreateAccount");
+        }
+
+        public ActionResult CreateEmployeeAccount()
+        {
+            return View("CreateEmployeeAccount");
+        }
+
+        public ActionResult CreateManagerAccount()
+        {
+            return View("CreateManagerAccount");
+        }
+
+        public ActionResult ViewEmployees()
+        {
+            return View("ViewEmployees");
         }
     }
 }

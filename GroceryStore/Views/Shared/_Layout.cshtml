@@ -23,6 +23,10 @@
                 <ul class="nav navbar-nav" style="font-family: 'MontSerrat'; font-weight: 600; font-size: 14px; color: white;">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
+                    {
+                      <li>@Html.ActionLink("View Employees", "ViewEmployees", "Home")</li>
+                    }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
