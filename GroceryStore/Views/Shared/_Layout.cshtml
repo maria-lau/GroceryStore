@@ -1,4 +1,5 @@
 ﻿<!DOCTYPE html>
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
 <html>
 <head>
     <meta charset="utf-8" />
@@ -16,45 +17,71 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Call It Local SENG401", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Fresh Direct", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav" style="font-family: 'MontSerrat'; font-weight: 600; font-size: 14px; color: white;">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    <li>@Html.ActionLink("Echo", "Index", "Echo")</li>
-                    @if (ClientApplicationMVC.Models.Globals.isLoggedIn() == true)
+                    @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
                     {
-                        <li>@Html.ActionLink("Company Search", "Index", "CompanyListings")</li>
-                        <li>@Html.ActionLink("Chat Box", "Index", "Chat")</li>
+                      <li>@Html.ActionLink("View Employees", "ViewEmployees", "Home")</li>
                     }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    @if (ClientApplicationMVC.Models.Globals.isLoggedIn() == true)
+                    @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
                     {
-                        <li style="padding-top: 15px; padding-bottom:15px;line-height: 20px;">Logged in as: @ClientApplicationMVC.Models.Globals.getUser()    </li>
-                        <li>@Html.ActionLink("Logout", "LogOut", "Authentication")</li>
+                        <li style="padding-top: 15px; padding-bottom:15px;line-height: 20px;">Logged in as: @GroceryStore.Models.Globals.getUser()    </li>
+                        <li>@Html.ActionLink("Logout", "LogOut", "Home")</li>
                     }
                     else
                     {
-                        <li id="UsernameDisplay">@Html.ActionLink(ClientApplicationMVC.Models.Globals.getUser(), "Index", "Authentication")</li>
+                        <li id="UsernameDisplay">@Html.ActionLink(GroceryStore.Models.Globals.getUser(), "GoToLogin", "Home")</li>
                     }
                 </ul>
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="page-wrap">
         @RenderBody()
-        <footer>
-            <p3>
-                <hr />
-                &copy; @DateTime.Now.Year - TFP Productions
-            </p3>
-        </footer>
     </div>
+    <footer id="footerContent" class="site-footer">
+            <hr />
+            &copy; @DateTime.Now.Year - Created by M.Lau, S.Li & J.Nieto
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
 </html>
+<style>
+    * {
+        margin: 0;
+    }
+
+    html, body {
+        height: 100%;
+    }
+
+    .page-wrap {
+        min-height: 100%;
+        /* equal to footer height */
+        margin-bottom: -20px;
+    }
+
+        .page-wrap:after {
+            content: "";
+            display: block;
+        }
+
+        .site-footer, .page-wrap:after {
+            height: 20px;
+        }
+
+    footerContent {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>

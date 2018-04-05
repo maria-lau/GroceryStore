@@ -17,5 +17,10 @@ namespace GroceryStore
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+        public void Session_OnStart()
+        {
+            HttpContext.Current.Session.Add("user", "Log In");
+            HttpContext.Current.Session.Timeout = GroceryStore.Models.Globals.patienceLevel_ms / (1000 * 60);//Convert from ms to minutes
+        }
     }
 }

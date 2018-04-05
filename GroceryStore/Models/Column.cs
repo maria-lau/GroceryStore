@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LinkShortener.Models.Database
+namespace GroceryStore.Models
 {
     /// <summary>
     /// This class represents a column in a table in a MySql database

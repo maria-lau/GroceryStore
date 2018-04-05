@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LinkShortener.Models.Debugging
+namespace GroceryStore.Models
 {
     public static class Debug
     {

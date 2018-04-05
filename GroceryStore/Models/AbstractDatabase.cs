@@ -1,11 +1,8 @@
-﻿using LinkShortener.Models.Debugging;
-
-using MySql.Data.MySqlClient;
-
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Threading;
 
-namespace LinkShortener.Models.Database
+namespace GroceryStore.Models
 {
     /// <summary>
     /// This class is used as a base class for the creation and deletion of a database.
@@ -20,7 +17,7 @@ namespace LinkShortener.Models.Database
         protected AbstractDatabase()
         {
             mutex = new Mutex(false);
-            connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+            connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
             createDB();
         }
 
@@ -33,9 +30,9 @@ namespace LinkShortener.Models.Database
             MySqlCommand command;
             commandString = "CREATE DATABASE " + databaseName + ";";
 
-            if(connection == null)
+            if (connection == null)
             {
-                connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+                connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
             }
 
             //connection.
@@ -54,7 +51,7 @@ namespace LinkShortener.Models.Database
                     {
                         Debug.consoleMsg("Database already exists.");
                         closeConnection();
-                        connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+                        connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
                         return;
                     }
                     Debug.consoleMsg("Unable to create database"
@@ -63,6 +60,32 @@ namespace LinkShortener.Models.Database
                     return;
                 }
 
+                commandString = "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'";
+                try
+                {
+                    command = new MySqlCommand(commandString, connection);
+                    command.ExecuteNonQuery();
+                    commandString = "FLUSH PRIVILEGES;";
+                    command = new MySqlCommand(commandString, connection);
+                    command.ExecuteNonQuery();
+                    Debug.consoleMsg("Successfully granted permissions.");
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to change permissions."
+                        + " Error: " + e.Number + e.Message);
+                    closeConnection();
+                    return;
+                }
+                closeConnection();
+            }
+
+            if (connection == null)
+            {
+                connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+            }
+
+            if (openConnection() == true) {
                 //Then try to create each of the tables in the database
                 foreach (Table table in tables)
                 {
@@ -84,7 +107,7 @@ namespace LinkShortener.Models.Database
                 }
 
                 closeConnection();
-                connection = new MySqlConnection("SERVER=35.199.156.224;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+                connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=" + databaseName + ";UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
             }
         }
 
