@@ -9,6 +9,7 @@ namespace GroceryStore.Models
     /// </summary>
     public partial class UserDatabase : AbstractDatabase
     {
+        public static int count = 0;
         /// <summary>
         /// Private default constructor to enforce the use of the singleton design pattern
         /// </summary>
@@ -192,7 +193,7 @@ namespace GroceryStore.Models
                 }
                 catch (Exception e)
                 {
-                    Debug.consoleMsg("Unable to Unable to complete insert new employee into database." +
+                    Debug.consoleMsg("Unable to complete insert new employee into database." +
                         " Error:" + e.Message);
                     message = e.Message;
                 }
@@ -333,6 +334,62 @@ namespace GroceryStore.Models
                 message = "Could not connect to database.";
             }
             return new Response(result, message);
+        }
+
+        public string getNextDeliveryWorker()
+        {
+            string message = "";
+            string query = @"SELECT COUNT(*) FROM " + databaseName + @".user " +
+                @"WHERE type='employee';";
+
+            if (openConnection())
+            {
+
+                try
+                {
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    int employeenum = (int)command.ExecuteScalar();
+                    int whosturn = count%employeenum;
+                    count += 1;
+                    query = @"SELECT fname,lname FROM " + databaseName + @".user " + @"WHERE type='employee';";
+                    command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    // if tuples are returned
+                    if (dataReader.HasRows)
+                    {
+                        for(int i = 0; i <= whosturn; i++)
+                        {
+                            dataReader.Read();
+                        }
+
+                        string name = dataReader.GetString(0) + " " + dataReader.GetString(1);
+                        dataReader.Close();
+                        closeConnection();
+                        return name;
+                    }
+                    // no tuples returned
+                    else
+                    {
+                        dataReader.Close();
+                        closeConnection();
+                        return "error in reading the rows.";
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                message = "Could not connect to database.";
+            }
+            return message;
         }
     }
 

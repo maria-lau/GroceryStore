@@ -17,7 +17,7 @@ namespace GroceryStore.Controllers
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult ViewStores()
         {
             ViewBag.Message = "Fresh Direct Locations";
 
@@ -167,27 +167,58 @@ namespace GroceryStore.Controllers
 
         public ActionResult Index()
         {
-            return View("Index");
+            return View();
         }
 
         public ActionResult CreateAccount()
         {
-            return View("CreateAccount");
+            return View();
         }
 
         public ActionResult CreateEmployeeAccount()
         {
-            return View("CreateEmployeeAccount");
+            return View();
         }
 
         public ActionResult CreateManagerAccount()
         {
-            return View("CreateManagerAccount");
+            return View();
         }
 
         public ActionResult ViewEmployees()
         {
-            return View("ViewEmployees");
+            return View();
+        }
+
+        public ActionResult CreateStore()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult CreateStorePost(int storeid, string street, string city, string province,string postalCode, string phone)
+        {
+            Store newstore = new Store();
+            newstore.storeid = storeid;
+            newstore.street = street;
+            newstore.city = city;
+            newstore.province = province;
+            newstore.postalcode = postalCode;
+            newstore.phone = phone;
+
+            StoreDatabase db = StoreDatabase.getInstance();
+            Response addstoreresponse = db.insertNewStore(newstore);
+
+            if (addstoreresponse.result)
+            {
+                Response.Write("<script>alert('" + addstoreresponse.response + "')</script>");
+                return View("ViewStores");
+            }
+            else
+            {
+                Response.Write("<script>alert('" + addstoreresponse.response + "')</script>");
+                return View("CreateStore");
+            }
         }
     }
 }

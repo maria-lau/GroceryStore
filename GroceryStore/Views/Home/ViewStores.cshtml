@@ -1,18 +1,21 @@
-﻿<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+﻿
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
 
-<div class="w3-container w3-display-middle">
+<div class="w3-container w3-display-middle" style="padding-top:150px;">
     <h1 class="w3-animate-left">
         <a style=color:#785ff4>Work </a><a style=color:#1185f9>in </a><a style=color:#3ae2fc>Progress</a>
         <br />
-        Will display list of employees and details for managers to view.
+        Where grocery store locations go.
     </h1>
 
     <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
-        <a href="/Home/CreateEmployeeAccount"><button type="button" class="createbtn">Add New Employee Account</button></a>
-        <a href="/Home/CreateManagerAccount"><button type="button" class="createbtn">Add New Manager Account</button></a>
+        @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
+        {
+            <a href="/Home/CreateStore"><button type="button" class="createbtn">Add New Store</button></a>
+        }
     </div>
-
 </div>
+
 
 <style>
 
