@@ -29,7 +29,7 @@ namespace GroceryStore.Models
             return instance;
         }
 
-        public Response addNewOrder(string username, Order order)
+        public Response placeOrder(string username, Order order)
         {
             bool result = false;
             string message = "";
