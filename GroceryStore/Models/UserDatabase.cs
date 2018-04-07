@@ -166,16 +166,23 @@ namespace GroceryStore.Models
                             return new Response(result, "failure to insert new user account.");
                         }
                     }
-                   
-                    string query = @"INSERT INTO " + dbname + @".employee(username, sin, startdate, hourlywage) " +
+                    if (openConnection() == true)
+                    {
+
+                        string query = @"INSERT INTO " + dbname + @".employee(username, sin, startdate, hourlywage) " +
                         @"VALUES('" + accountInfo.username + @"', '" + accountInfo.sin +
                         @"', '" + accountInfo.startdate + @"', '" + accountInfo.hourlywage + @"');";
 
 
-                    MySqlCommand command = new MySqlCommand(query, connection);
-                    command.ExecuteNonQuery();
-                    result = true;
-                    message = "Employee Account created successfully.";
+                        MySqlCommand command = new MySqlCommand(query, connection);
+                        command.ExecuteNonQuery();
+                        result = true;
+                        message = "Employee Account created successfully.";
+                    }
+                    else
+                    {
+                        message = "Unable to connect to database";
+                    }
                 }
                 catch (MySqlException e)
                 {
@@ -456,8 +463,8 @@ namespace GroceryStore.Models
                 (
                     dbname,
                     "employee",
-                    false,
-                    "FOREIGN KEY (username) REFERENCES user(username)",
+                    true,
+                    "FOREIGN KEY (username) REFERENCES userdb.user(username) ON UPDATE CASCADE ON DELETE CASCADE",
                     new Column[]
                     {
                         new Column
@@ -500,8 +507,8 @@ namespace GroceryStore.Models
                 (
                     dbname,
                     "manager",
-                    false,
-                    "FOREIGN KEY (username) REFERENCES user(username)",
+                    true,
+                    "FOREIGN KEY (username) REFERENCES userdb.user(username) ON UPDATE CASCADE ON DELETE CASCADE",
                     new Column[]
                     {
                         new Column
