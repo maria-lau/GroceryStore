@@ -14,10 +14,12 @@ namespace GroceryStore.Models
         /// <param name="name">The name of the table</param>
         /// <param name="structure">The MySQL information to create the table. Should be able to append this string
         /// to a CREATE TABLE command.</param>
-        public Table(string databaseName, string tableName, Column[] columns)
+        public Table(string databaseName, string tableName, bool fkpresent, string fk, Column[] columns)
         {
             this.databaseName = databaseName;
             this.tableName = tableName;
+            this.fkpresent = fkpresent;
+            this.fk = fk;
             this.columns = columns;
         }
 
@@ -52,6 +54,10 @@ namespace GroceryStore.Models
                 }
                 query += primaryKeys[i] + ")";
             }
+            if (fkpresent)
+            {
+                query += "," + fk;
+            }
             query += ");";
             return query;
         }
@@ -81,6 +87,10 @@ namespace GroceryStore.Models
         /// The name of the table
         /// </summary>
         public string tableName { get; }
+
+        public bool fkpresent = false;
+
+        public string fk = "";
 
         /// <summary>
         /// Represents the structure of the database

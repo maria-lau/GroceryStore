@@ -7,75 +7,29 @@ namespace GroceryStore.Models
     /// This class is used to manipulate and read the Authentication Service's database in a safe and consistent manner.
     /// It follows the singleton design pattern, as only one instance of this class should ever be in existance at any given time.
     /// </summary>
-    public partial class AuthenticationDatabase : AbstractDatabase
+    public partial class OrderDatabase : AbstractDatabase
     {
         /// <summary>
         /// Private default constructor to enforce the use of the singleton design pattern
         /// </summary>
-        private AuthenticationDatabase() { }
+        private OrderDatabase() { }
+        public static int ordernumber = 0;
+        public static int deliverynumber = 0;
 
         /// <summary>
         /// Gets the singleton instance of the database
         /// </summary>
         /// <returns>The singleton instance of the database</returns>
-        public static AuthenticationDatabase getInstance()
+        public static OrderDatabase getInstance()
         {
             if (instance == null)
             {
-                instance = new AuthenticationDatabase();
+                instance = new OrderDatabase();
             }
             return instance;
         }
 
-        public Response Login(string username, string password)
-        {
-            bool result = false;
-            string message = "";
-            string query = @"SELECT * FROM " + databaseName + @".user " +
-                @"WHERE username='" + username + @"' " +
-                @"AND password='" + password + @"';";
-
-            if (openConnection())
-            {
-
-                try
-                {
-                    MySqlCommand command = new MySqlCommand(query, connection);
-                    MySqlDataReader dataReader = command.ExecuteReader();
-                    result = dataReader.Read();
-                    dataReader.Close();
-                    if (result == true)
-                    {
-                        message = "Login successful.";
-                        Globals.setUser(username);
-                    }
-                    else
-                    {
-                        message = "Incorrect username and/or password. Please try again.";
-                    }
-                }
-                catch (Exception e)
-                {
-                    message = e.Message;
-                }
-                finally
-                {
-                    closeConnection();
-                }
-            }
-            else
-            {
-                result = false;
-                message = "Could not connect to database.";
-            }
-            return new Response(result, message);
-        }
-        /// <summary>
-        /// Attempts to insert a new user account into the database
-        /// </summary>
-        /// <param name="accountInfo">Contains information about the </param>
-        /// <returns>A message indicating the result of the attempt</returns>
-        public Response insertNewUserAccount(UserAccount accountInfo)
+        public Response placeOrder(string username, Order order)
         {
             bool result = false;
             string message = "";
@@ -83,43 +37,37 @@ namespace GroceryStore.Models
             {
                 try
                 {
-                    // check if username is unique
-                    string query = @"SELECT * FROM " + databaseName + @".user " + @"WHERE username='" + accountInfo.username + @"';";
-                    MySqlCommand command = new MySqlCommand(query, connection);
-                    MySqlDataReader dataReader = command.ExecuteReader();
+                    int newordernum = ordernumber + 1;
+                    int newdeliverynum = (newordernum / 5) + 1;
 
-                    if (dataReader.Read())
+                    if (newdeliverynum != deliverynumber)
                     {
-                        // username exists
-                        dataReader.Close();
-                        result = false;
-                        message = "Username is already taken. Please try another.";
-                        return new Response(result, message);
+                        addDelivery(newdeliverynum, order.orderdate.AddDays(3));
                     }
-                    dataReader.Close();
+                    if (openConnection() == true)
+                    {
+                        string query = @"INSERT INTO " + dbname + @".order(username, orderdate, deliveryid) " +
+                            @"VALUES('" + username + @"', '" + order.orderdate.Date.ToString("d") +
+                            @"', '" + newdeliverynum + @"');";
 
-                    query = @"INSERT INTO " + dbname + @".user(username, password, fname, lname, street, city, province, postalcode, email, phone, type) " +
-                        @"VALUES('" + accountInfo.username + @"', '" + accountInfo.password +
-                        @"', '" + accountInfo.fname + @"', '" + accountInfo.lname +
-                        @"', '" + accountInfo.street + @"', '" + accountInfo.city +
-                        @"', '" + accountInfo.province + @"', '" + accountInfo.postalcode +
-                        @"', '" + accountInfo.email + @"', '" + accountInfo.phone + @"', '" + accountInfo.type + @"');";
 
-                
-                    command = new MySqlCommand(query, connection);
-                    command.ExecuteNonQuery();
-                    result = true;
-                    message = "Account created successfully.";
+                        MySqlCommand command = new MySqlCommand(query, connection);
+                        command.ExecuteNonQuery();
+                        result = true;
+                        ordernumber = newordernum;
+                        newdeliverynum = deliverynumber;
+                        message = "New Order Added";
+                    }
                 }
                 catch (MySqlException e)
                 {
-                    Debug.consoleMsg("Unable to complete insert new user into database." +
+                    Debug.consoleMsg("Unable to complete add order into database." +
                         " Error :" + e.Number + e.Message);
                     message = e.Message;
                 }
                 catch (Exception e)
                 {
-                    Debug.consoleMsg("Unable to Unable to complete insert new user into database." +
+                    Debug.consoleMsg("Unable to complete add order into database." +
                         " Error:" + e.Message);
                     message = e.Message;
                 }
@@ -132,28 +80,77 @@ namespace GroceryStore.Models
             {
                 message = "Unable to connect to database";
             }
+            return new Response(result, message);
+        }
 
+        public Response addDelivery(int deliverynum, DateTime planneddeliverydate)
+        {
+            bool result = false;
+            string message = "";
+            if (openConnection() == true)
+            {
+                try
+                {
+                    UserDatabase db = UserDatabase.getInstance();
+                    string employeetodeliver = db.getNextDeliveryWorker();
+                    if (openConnection() == true)
+                    {
+                        string query = @"INSERT INTO " + dbname + @".delivery(deliveryid, planneddeliverydate, employeetodeliver) " +
+                        @"VALUES('" + deliverynum + @"', '" + planneddeliverydate.Date.ToString("d") +
+                        @"', '" + employeetodeliver + @"');";
+
+
+                        MySqlCommand command = new MySqlCommand(query, connection);
+                        command.ExecuteNonQuery();
+                        result = true;
+                        message = "New Delivery Added";
+                    }
+                    else
+                    {
+                       message = "error getting next delivery worker name.";
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                        " Error :" + e.Number + e.Message);
+                    message = e.Message;
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                        " Error:" + e.Message);
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                message = "Unable to connect to database";
+            }
             return new Response(result, message);
         }
     }
-
     /// <summary>
     /// This portion of the class contains the member variables as well as the schema definition in the form of Table/Column objects
     /// </summary>
-    public partial class AuthenticationDatabase : AbstractDatabase
+    public partial class OrderDatabase : AbstractDatabase
     {
         /// <summary>
         /// The name of the database.
         /// Both of these properties are required in order for both the base class and the
         /// table definitions below to have access to the variable.
         /// </summary>
-        private const String dbname = "userdb";
+        private const String dbname = "orderdb";
         public override String databaseName { get; } = dbname;
 
         /// <summary>
         /// The singleton instance of the database
         /// </summary>
-        private static AuthenticationDatabase instance;
+        private static OrderDatabase instance;
 
         /// <summary>
         /// This property represents the database schema, and will be used by the base class
@@ -164,21 +161,24 @@ namespace GroceryStore.Models
             new Table
                 (
                     dbname,
-                    "user",
+                    "order",
+                    true,
+                    "FOREIGN KEY (username) REFERENCES userdb.user(username) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (deliveryid) REFERENCES orderdb.delivery(deliveryid)",
                     new Column[]
                     {
                         new Column
                         (
-                            "username", "VARCHAR(50)",
+                            "orderid", "INT",
                             new string[]
                             {
                                 "NOT NULL",
-                                "UNIQUE"
+                                "UNIQUE",
+                                 "AUTO_INCREMENT"
                             }, true
                         ),
                         new Column
                         (
-                            "password", "VARCHAR(50)",
+                            "username", "VARCHAR(30)",
                             new string[]
                             {
                                 "NOT NULL"
@@ -186,7 +186,7 @@ namespace GroceryStore.Models
                         ),
                         new Column
                         (
-                            "fname", "VARCHAR(30)",
+                            "orderdate", "VARCHAR(20)",
                             new string[]
                             {
                                 "NOT NULL"
@@ -194,7 +194,34 @@ namespace GroceryStore.Models
                         ),
                          new Column
                         (
-                            "lname", "VARCHAR(30)",
+                            "deliveryid", "INT",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        )
+                    }
+                ),
+            new Table
+                (
+                    dbname,
+                    "delivery",
+                    true,
+                    "FOREIGN KEY (username) REFERENCES userdb.user(username) ON UPDATE CASCADE ON DELETE CASCADE",
+                    new Column[]
+                    {
+                        new Column
+                        (
+                            "deliveryid", "INT",
+                            new string[]
+                            {
+                                "NOT NULL",
+                                "UNIQUE",
+                            }, true
+                        ),
+                        new Column
+                        (
+                            "planneddeliverydate", "VARCHAR(20)",
                             new string[]
                             {
                                 "NOT NULL"
@@ -202,55 +229,24 @@ namespace GroceryStore.Models
                         ),
                         new Column
                         (
-                            "street", "VARCHAR(30)",
+                            "actualdeliverydate", "VARCHAR(20)",
                             new string[]
                             {
-                                "NOT NULL"
+                                "DEFAULT NULL"
                             }, false
                         ),
                         new Column
                         (
-                            "city", "VARCHAR(20)",
+                            "delivered(y/n)", "VARCHAR(1)",
                             new string[]
                             {
-                                "NOT NULL"
-                            }, false
-                        ),
-                        new Column
-                        (
-                            "province", "VARCHAR(30)",
-                            new string[]
-                            {
-                                "NOT NULL"
+                                "NOT NULL",
+                                "DEFAULT 'n'"
                             }, false
                         ),
                          new Column
                         (
-                            "postalcode", "VARCHAR(7)",
-                            new string[]
-                            {
-                                "NOT NULL"
-                            }, false
-                        ),
-                          new Column
-                        (
-                            "email", "VARCHAR(50)",
-                            new string[]
-                            {
-                                "NOT NULL"
-                            }, false
-                        ),
-                           new Column
-                        (
-                            "phone", "VARCHAR(20)",
-                            new string[]
-                            {
-                                "NOT NULL"
-                            }, false
-                        ),
-                        new Column
-                        (
-                            "type", "VARCHAR(20)",
+                            "employeetodeliver", "VARCHAR(30)",
                             new string[]
                             {
                                 "NOT NULL"
@@ -261,3 +257,4 @@ namespace GroceryStore.Models
         };
     }
 }
+

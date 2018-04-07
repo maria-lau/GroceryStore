@@ -33,5 +33,19 @@ namespace GroceryStore.Models
         {
             return (string)HttpContext.Current.Session["user"];
         }
+
+        public static string getUserType(string username)
+        {
+            UserDatabase db = UserDatabase.getInstance();
+            Response usertype = db.getUserType(username);
+            if (usertype.result)
+            {
+                return usertype.response;
+            }
+            else
+            {
+                return ("");
+            }
+        }
     }
 }

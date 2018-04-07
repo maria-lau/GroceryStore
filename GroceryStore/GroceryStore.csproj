@@ -154,10 +154,21 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AbstractDatabase.cs" />
-    <Compile Include="Models\AuthenticationDatabase.cs" />
+    <Compile Include="Models\Cart.cs" />
+    <Compile Include="Models\Delivery.cs" />
+    <Compile Include="Models\GroceryDatabase.cs" />
+    <Compile Include="Models\GroceryItem.cs" />
+    <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\OrderDatabase.cs" />
+    <Compile Include="Models\Recipe.cs" />
+    <Compile Include="Models\Store.cs" />
+    <Compile Include="Models\StoreDatabase.cs" />
+    <Compile Include="Models\UserDatabase.cs" />
     <Compile Include="Models\Column.cs" />
     <Compile Include="Models\Debug.cs" />
+    <Compile Include="Models\EmployeeAccount.cs" />
     <Compile Include="Models\Globals.cs" />
+    <Compile Include="Models\ManagerAccount.cs" />
     <Compile Include="Models\Response.cs" />
     <Compile Include="Models\Table.cs" />
     <Compile Include="Models\UserAccount.cs" />
@@ -181,7 +192,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Scripts\AuthenticationFunctions.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
@@ -210,10 +220,14 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\ViewStores.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\CreateAccount.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
+    <Content Include="Views\Home\CreateEmployeeAccount.cshtml" />
+    <Content Include="Views\Home\ViewEmployees.cshtml" />
+    <Content Include="Views\Home\CreateManagerAccount.cshtml" />
+    <Content Include="Views\Home\CreateStore.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

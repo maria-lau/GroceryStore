@@ -1,22 +1,21 @@
-﻿<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+﻿
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
 
-<div class="w3-container w3-display-middle">
+<div class="w3-container w3-display-middle" style="padding-top:150px;">
     <h1 class="w3-animate-left">
-        <a style=color:#785ff4>Fresh </a><a style=color:#1185f9>Direct </a><a style=color:#3ae2fc>Login</a> Page
+        <a style=color:#785ff4>Work </a><a style=color:#1185f9>in </a><a style=color:#3ae2fc>Progress</a>
+        <br />
+        Where grocery store locations go.
     </h1>
-    @using (Html.BeginForm("Login", "Home", FormMethod.Post))
-    {
-        <div class="container" style="text-align:center;">
-            @Html.TextBox("usernameData", null, new { @placeholder = "Enter Username", required = "required" })
-            @Html.Password("passwordData", null, new { @placeholder = "Enter Password", required = "required" })
 
-        </div>
-        <div style="text-align:center;">
-            <input type="submit" value="Login" style="float: none; background-color: #785ff4;color: white; padding: 10px 15px; margin: 10px 0; border: none; cursor: pointer; width: 200px; height: 45px" />
-            <a href="/Home/CreateAccount"><button type="button" class="createbtn">Create New Account</button></a>
-        </div>
-    }
+    <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
+        @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
+        {
+            <a href="/Home/CreateStore"><button type="button" class="createbtn">Add New Store</button></a>
+        }
+    </div>
 </div>
+
 
 <style>
 
@@ -57,7 +56,7 @@
         border: none;
         cursor: pointer;
         width: 200px;
-        height: 45px;
+        height: 90px;
     }
 
         /* Add a hover effect for buttons */
@@ -115,9 +114,3 @@
         font-size: 14px;
     }
 </style>
-
-<script>
-    gotoCreateAccount(){
-        return View("CreateAccount");
-    }
-</script>

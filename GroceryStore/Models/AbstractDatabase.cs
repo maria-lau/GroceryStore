@@ -47,7 +47,7 @@ namespace GroceryStore.Models
                 }
                 catch (MySqlException e)
                 {
-                    if (e.Number == 1007)//Database already exists, no need to continure further
+                    if (e.Number == 1007)//Database already exists, no need to continue further
                     {
                         Debug.consoleMsg("Database already exists.");
                         closeConnection();
@@ -60,6 +60,32 @@ namespace GroceryStore.Models
                     return;
                 }
 
+                commandString = "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'";
+                try
+                {
+                    command = new MySqlCommand(commandString, connection);
+                    command.ExecuteNonQuery();
+                    commandString = "FLUSH PRIVILEGES;";
+                    command = new MySqlCommand(commandString, connection);
+                    command.ExecuteNonQuery();
+                    Debug.consoleMsg("Successfully granted permissions.");
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to change permissions."
+                        + " Error: " + e.Number + e.Message);
+                    closeConnection();
+                    return;
+                }
+                closeConnection();
+            }
+
+            if (connection == null)
+            {
+                connection = new MySqlConnection("SERVER=35.185.228.41;DATABASE=mysql;UID=" + UID + ";AUTO ENLIST=false;PASSWORD=" + Password);
+            }
+
+            if (openConnection() == true) {
                 //Then try to create each of the tables in the database
                 foreach (Table table in tables)
                 {
