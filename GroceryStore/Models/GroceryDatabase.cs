@@ -173,7 +173,8 @@ namespace GroceryStore.Models
                             int quantity= dataReader.GetInt32(2);
                             string groceryitemname = dataReader.GetString(0);
                             
-                            cartresult.AddtoCart(sku, quantity, groceryitemname);
+                         
+                            cartresult.AddtoCart(sku, groceryitemname, quantity);
                             
                         }
                     }
