@@ -195,6 +195,30 @@ namespace GroceryStore.Controllers
             return View();
         }
 
+        public ActionResult ViewCart()
+        {
+            string username = Globals.getUser();
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Cart mycart = db.getCart(username);
+
+            if (mycart.cartcontents == null)
+            {
+                ViewBag.EmptyCart = "true";
+            }
+            else
+            {
+                ViewBag.EmptyCart = "false";
+                //for(int i = 0; i < mycart.cartcontents.Count; i++)
+                //{
+                //    int sku = mycart.cartcontents.ElementAt(i).Item1;
+                //    string itemname = mycart.cartcontents.ElementAt(i).Item2;
+                //    int quantity = mycart.cartcontents.ElementAt(i).Item3;
+                //}
+      
+            }
+            return View();
+        }
+        
         [HttpPost]
         public ActionResult CreateStorePost(int storeid, string street, string city, string province,string postalCode, string phone)
         {
