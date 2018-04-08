@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 
 namespace GroceryStore.Models
 {
@@ -151,6 +152,51 @@ namespace GroceryStore.Models
             }
 
             return new Response(result, message);
+        }
+        public Cart getCart(string username)
+        {
+            Cart cartresult = new Cart();
+             if(openConnection() == true)
+            {
+                try
+                {
+                    string query = @"SELECT * FROM " + databaseName + @".cart " + @"WHERE username='" + username + @"' " + @"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (dataReader.HasRows)
+                    {
+                        cartresult.cartcontents = new List<Tuple<int, string, int>>();
+                        while (dataReader.Read())
+                        {
+                            int sku = dataReader.GetInt32(1);
+                            int quantity= dataReader.GetInt32(2);
+                            string groceryitemname = dataReader.GetString(0);
+                            
+                            cartresult.AddtoCart(sku, quantity, groceryitemname);
+                            
+                        }
+                    }
+                    dataReader.Close();
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+
+
+            return cartresult;
         }
     }
     /// <summary>
