@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 
 namespace GroceryStore.Models
 {
@@ -132,6 +133,133 @@ namespace GroceryStore.Models
                 message = "Unable to connect to database";
             }
             return new Response(result, message);
+        }
+
+        public List<Tuple<int, string, string>> getOrders(string username)
+        {
+            List<Tuple<int, string, string>> orders = new List<Tuple<int, string, string>>();
+            if (openConnection() == true)
+            {
+                try
+                {
+                    //search for all orders that belong to a user
+                    string query = @"SELECT orderid, orderdate, deliveryid FROM " + dbname + @".order WHERE username = '" + username + @"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                   
+                    //query may retain many orders and they may not all belong to same delivery, store values from same tuples together
+                    List<Tuple<int, string, int>> orderTuples = new List<Tuple<int, string, int>>();
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            int orderid = dataReader.GetInt32(0);
+                            string orderDate = dataReader.GetString(2);
+                            int delID = dataReader.GetInt32(3);  
+                            Tuple<int, string, int> tuple = new Tuple<int, string, int>(orderid, orderDate, delID);
+                            orderTuples.Add(tuple);
+                        }
+
+                    }
+                    else
+                    {
+                        return orders; //return empty list
+                    }
+                    dataReader.Close(); //close connection, no longer need anything from order table
+
+                    int firstDeliveryID = orderTuples[0].Item3; //used to see if orders for this user belong to more than one delivery
+
+                    bool moreThanOneDelivery = false;
+                    for(int i = 0; i < orderTuples.Count; i++)
+                    {
+                        if (orderTuples[i].Item3 != firstDeliveryID)
+                            moreThanOneDelivery = true;
+                    }
+                    if (!moreThanOneDelivery) //if orders belong to only one delivery, check if delivery has been delivered
+                    {
+                        query = @"SELECT delivered(y/n) FROM " + dbname + @".delivery WHERE deliveryid = '" + firstDeliveryID + @"';";
+                        command = new MySqlCommand(query, connection);
+                        MySqlDataReader reader = command.ExecuteReader();
+                        String delivered = "";
+                        if (reader.HasRows)
+                        {
+                            reader.Read();
+                            delivered = reader.GetString(0);
+                            reader.Close();
+                        }
+                        for(int i = 0; i < orderTuples.Count; i++) //add the delivered(y/n) field to the orderTuples previously collected
+                        {
+                            Tuple<int, string, string> order = new Tuple<int, string, string>(orderTuples[i].Item1, orderTuples[i].Item2, delivered);
+                            orders.Add(order);
+                        }
+                        return orders;
+                    }
+                    else
+                    {
+                        orders = searchMultipleDeliveries(orderTuples);
+                        return orders;
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+                return orders;
+        }
+
+        public List<Tuple<int, string, string>> searchMultipleDeliveries(List<Tuple<int, string, int>> orderTuples)
+        {
+            List<Tuple<int, string, string>> allOrders = new List<Tuple<int, string, string>>();
+            if(openConnection() == true)
+            {
+                try
+                {
+                    //since not all orders were a part of the same delivery, must check for delivered(y/n) individually
+                    for(int i = 0; i < orderTuples.Count; i++)
+                    {
+                        string query = @"SELECT delivered(y/n) FROM " + dbname + @".delivery WHERE deliveryid = '" + orderTuples[i].Item3 + @"';";
+                        MySqlCommand command = new MySqlCommand(query, connection);
+                        MySqlDataReader reader = command.ExecuteReader();
+                        String delivered = "";
+                        if (reader.HasRows)
+                        {
+                            reader.Read();
+                            delivered = reader.GetString(0);
+                            Tuple<int, string, string> allOrdersTuple = new Tuple<int, string, string>(orderTuples[i].Item1, orderTuples[i].Item2, delivered);
+                            allOrders.Add(allOrdersTuple);
+                        }
+                        reader.Close();
+                    }
+                    
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+
+            return allOrders;
         }
     }
     /// <summary>
