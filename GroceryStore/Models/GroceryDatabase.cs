@@ -350,7 +350,7 @@ namespace GroceryStore.Models
                     dbname,
                     "recipecontainsgroceryitem",
                     true,
-                    "FOREIGN KEY (sku) REFERENCES grocerydb.groceryitems(sku) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (recipeid) REFERENCES grocerydb.recipe(recipeid) ON UPDATE CASCADE ON DELETE CASCADE",
+                    "FOREIGN KEY (sku) REFERENCES grocerydb.groceryitem(sku) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (recipeid) REFERENCES grocerydb.recipe(recipeid) ON UPDATE CASCADE ON DELETE CASCADE",
                     new Column[]
                     {
                         new Column
