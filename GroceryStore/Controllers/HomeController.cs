@@ -195,6 +195,15 @@ namespace GroceryStore.Controllers
             return View();
         }
 
+        public ActionResult ViewOrders()
+        {
+            OrderDatabase db = OrderDatabase.getInstance();
+            // <orderid, orderdate, deliveredboolean
+            List<Tuple<int, string, string>> orderInfo = db.getOrders(Globals.getUser());
+            return View();
+        }
+
+
         public ActionResult ViewCart()
         {
             string username = Globals.getUser();
@@ -242,6 +251,39 @@ namespace GroceryStore.Controllers
             {
                 Response.Write("<script>alert('" + addstoreresponse.response + "')</script>");
                 return View("CreateStore");
+            }
+        }
+
+        public ActionResult Shop()
+        {
+            return View();
+        }
+
+        public ActionResult AddGroceryItem()
+        {
+            return View();
+        }
+
+        public ActionResult AddGroceryItemPost(int sku, string name, double purchaseprice, double sellingprice, int quantity)
+        {
+            GroceryItem newitem = new GroceryItem();
+            newitem.sku = sku;
+            newitem.name = name;
+            newitem.purchaseprice = purchaseprice;
+            newitem.sellingprice = sellingprice;
+            newitem.quantity = quantity;
+
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Response additemresponse = db.insertNewGroceryItem(newitem);
+            if (additemresponse.result)
+            {
+                Response.Write("<script>alert('" + additemresponse.response + "')</script>");
+                return View("Shop");
+            }
+            else
+            {
+                Response.Write("<script>alert('" + additemresponse.response + "')</script>");
+                return View("AddGroceryItem");
             }
         }
     }

@@ -28,6 +28,49 @@ namespace GroceryStore.Models
             return instance;
         }
 
+        public List<Tuple<int, string, int>> getGroceryItems()
+        {
+            List<Tuple<int, string, int>> items;
+            if (openConnection() == true)
+            {
+                try
+                {
+                    string query = @"SELECT * FROM " + databaseName + @".groceryitem" + @";";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (dataReader.HasRows)
+                    {
+                        items = new List<Tuple<int, string, int>>();
+                        while (dataReader.Read())
+                        {
+                            int sku = dataReader.GetInt32(0);
+                            string name = dataReader.GetString(1);
+                            int quantity = dataReader.GetInt32(4);
+                            items.Add(Tuple.Create(sku, name, quantity));
+                            return items;
+                        }
+                    }
+                    dataReader.Close();
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            return new List<Tuple<int, string, int>>();
+        }
+
 
         public Response insertNewGroceryItem(GroceryItem item)
         {
@@ -61,7 +104,7 @@ namespace GroceryStore.Models
                     command = new MySqlCommand(query, connection);
                     command.ExecuteNonQuery();
                     result = true;
-                    message = "Item added inventory successfully.";
+                    message = "Item added to inventory successfully.";
                 }
                 catch (MySqlException e)
                 {

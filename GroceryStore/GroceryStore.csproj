@@ -229,6 +229,9 @@
     <Content Include="Views\Home\CreateManagerAccount.cshtml" />
     <Content Include="Views\Home\CreateStore.cshtml" />
     <Content Include="Views\Home\ViewCart.cshtml" />
+    <Content Include="Views\Home\ViewOrders.cshtml" />
+    <Content Include="Views\Home\Shop.cshtml" />
+    <Content Include="Views\Home\AddGroceryItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
