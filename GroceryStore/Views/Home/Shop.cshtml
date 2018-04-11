@@ -8,25 +8,25 @@
     </h1>
     <br /> <br />
     <div style="text-align:left; padding-left:300px;">
-        @if (ViewBag.foundgroceries = true)
+        @if (ViewBag.foundgroceries == true)
         {
-            foreach (Tuple<int, string, string, int> item in ViewBag.grocerylist)
+            foreach (Tuple<int, string, double, int> item in ViewBag.grocerylist)
             {
-                <div style="width:200px;display: inline-block;">
-                <p>@item.Item2</p>
+                <div style="width:300px;display: inline-block;">
+                <p>@item.Item2 (SKU: @item.Item1)</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
                 <p> Price: @item.Item3.ToString("C") each</p>
                 </div>
-                <div style="width:200px;display: inline-block;">
+                <div style="width:150px;display: inline-block;">
                 <p>@item.Item4 in Stock</p>
                 </div>
-                <div style="width:200px;display: inline-block;">
+                <div style="width:250px;display: inline-block;">
                     @using (Html.BeginForm("addToCart", "Home", FormMethod.Post))
                     {
                          @Html.TextBox("quantity", null, new {@placeholder = "qty", required = "required", type = "number", min="1", step="1",style = "width:50px;display: inline-block;"})
                          <input type="hidden" value="@item.Item1" name="sku" />
-                         <input style="hidden" value="@item.Item3" name="price"/>
+                         <input type="hidden" value="@item.Item3" name="price"/>
                          <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 120px;" value="Add to Cart" />
                     }
                 </div>
@@ -36,19 +36,19 @@
         }
         else
         {
-            <p>There is curretly no inventory.</p>
+            <p>There is currently no inventory.</p>
         }
     </div>
     <br /> <br />
     <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
         @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
         {
-            <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" href="/Home/CreateStore">Add New Store</a>
+            <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 320px;height: 40px;" href="/Home/AddGroceryItem">Add New Grocery Item</a>
             <br /> <br /><br /><br />
-            using (Html.BeginForm("DeleteStore", "Home", FormMethod.Post))
+            using (Html.BeginForm("DeleteGroceryItem", "Home", FormMethod.Post))
             {
-                @Html.TextBox("storeid", null, new { @placeholder = "Enter ID of Store to be Deleted", required = "required" })<br />
-                <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" value="Delete Store" />
+                @Html.TextBox("sku", null, new { @placeholder = "Enter SKU of Item to be Deleted", required = "required", style = "width:320px;"})<br />
+                <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 320px;height: 40px;" value="Delete Item" />
             }
         }
     </div>

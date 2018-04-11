@@ -9,23 +9,22 @@
     </h1>
     <br /> <br />
     <div style="text-align:left; padding-left:300px;">
-        @if (ViewBag.EmptyCart = false)
+        @if (ViewBag.EmptyCart == false)
         {
-            foreach (Tuple<int, string, int> item in ViewBag.cartlist)
+            foreach (Tuple<int, string, int, double> item in ViewBag.cartlist)
             {
                 <div style="width:200px;display: inline-block;">
                     <p>@item.Item2 (Item SKU:@item.Item1)</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
-                    <p> Price: @item.Item3 each</p>
+                    <p>Quantity: @item.Item3 in cart</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
-                    <p>@item.Item4 in Stock</p>
+                    <p>Price: @item.Item4</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
-                    @using (Html.BeginForm("addToCart", "Home", FormMethod.Post))
+                    @using (Html.BeginForm("deleteFromCart", "Home", FormMethod.Post))
                     {
-                        @Html.TextBox("quantity", null, new { @placeholder = "qty", required = "required", type = "number", min = "1", step = "1", style = "width:50px;display: inline-block;" })
                         <input type="hidden" value="@item.Item1" name="sku" />
                         <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 120px;" value="Add to Cart" />
                     }

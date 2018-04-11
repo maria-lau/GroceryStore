@@ -252,11 +252,11 @@ namespace GroceryStore.Controllers
             Response addtocartresponse = db.addItemtoCart(Globals.getUser(), sku, quantity, (quantity*price));
             if (addtocartresponse.result)
             {
-                return RedirectToAction("Shop", new { itemAdded = 1, message = addtocartresponse.response});
+                return RedirectToAction("Shop", new { itemoperation = 1, message = addtocartresponse.response});
             }
             else
             {
-                return RedirectToAction("Shop", new { itemAdded = 2, message = addtocartresponse.response});
+                return RedirectToAction("Shop", new { itemoperation = 2, message = addtocartresponse.response});
             }
         }
 
@@ -304,13 +304,13 @@ namespace GroceryStore.Controllers
             }
         }
 
-        public ActionResult Shop(int itemAdded = 0, string message ="")
+        public ActionResult Shop(int itemoperation = 0, string message = "")
         {
-            if (itemAdded == 1)
+            if (itemoperation == 1)
             {
                 Response.Write("<script>alert('" + message + "')</script>");
             }
-            else if (itemAdded == 2)
+            else if (itemoperation == 2)
             {
                 Response.Write("<script>alert('" + message + "')</script>");
             }
@@ -330,8 +330,12 @@ namespace GroceryStore.Controllers
             return View();
         }
 
-        public ActionResult AddGroceryItem()
+        public ActionResult AddGroceryItem(int itemoperation = 0, string message = "")
         {
+            if (itemoperation == 1)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
             return View();
         }
 
@@ -348,13 +352,25 @@ namespace GroceryStore.Controllers
             Response additemresponse = db.insertNewGroceryItem(newitem);
             if (additemresponse.result)
             {
-                Response.Write("<script>alert('" + additemresponse.response + "')</script>");
-                return View("Shop");
+                return RedirectToAction("Shop", new { itemoperation = 1, message = additemresponse.response});
             }
             else
             {
-                Response.Write("<script>alert('" + additemresponse.response + "')</script>");
-                return View("AddGroceryItem");
+                return RedirectToAction("AddGroceryItem", new { itemoperation = 1, message = additemresponse.response });
+            }
+        }
+
+        public ActionResult DeleteGroceryItem(int sku)
+        {
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Response deletegroceryitemresponse = db.deleteGroceryItem(sku);
+            if (deletegroceryitemresponse.result)
+            {
+                return RedirectToAction("Shop", new { itemoperation = 1, message = deletegroceryitemresponse.response});
+            }
+            else
+            {
+                return RedirectToAction("Shop", new { itemoperation = 2, message = deletegroceryitemresponse.response });
             }
         }
     }
