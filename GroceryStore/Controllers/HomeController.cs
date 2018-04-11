@@ -21,6 +21,25 @@ namespace GroceryStore.Controllers
         {
             ViewBag.Message = "Fresh Direct Locations";
 
+            StoreDatabase db = StoreDatabase.getInstance();
+            List <Store> stores = db.getAllStores();
+            if (stores.Count > 0)
+            {
+                List<string> templist = new List<string>();
+                ViewBag.foundStores = true;
+                for(int i = 0; i < stores.Count(); i++)
+                {
+                    string temp ="Store #: " + stores[i].storeid + "<br />" + stores[i].street + "<br />" + stores[i].city + ", " + stores[i].province + "<br />" + stores[i].phone;
+                    templist.Add(temp);
+                }
+                ViewBag.storelist = templist;
+
+            }
+            else
+            {
+                ViewBag.foundStores = false;
+            }
+
             return View();
         }
 

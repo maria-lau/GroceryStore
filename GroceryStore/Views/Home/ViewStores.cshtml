@@ -3,10 +3,23 @@
 
 <div class="w3-container w3-display-middle" style="padding-top:150px;">
     <h1 class="w3-animate-left">
-        <a style=color:#785ff4>Work </a><a style=color:#1185f9>in </a><a style=color:#3ae2fc>Progress</a>
+        <a style=color:#785ff4>Our </a><a style=color:#1185f9>Store </a><a style=color:#3ae2fc>Locations</a>
         <br />
-        Where grocery store locations go.
     </h1>
+    @if (ViewBag.foundStores = true)
+    {
+        @foreach (string store in ViewBag.storelist)
+        {
+            <div style="width:200px;">
+                    <p>@Html.Raw(store)</p>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+
+    }
 
     <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
         @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
