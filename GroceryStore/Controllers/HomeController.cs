@@ -43,6 +43,21 @@ namespace GroceryStore.Controllers
             return View();
         }
 
+        public ActionResult DeleteStore(int storeid)
+        {
+            StoreDatabase db = StoreDatabase.getInstance();
+            Response deletestoreresponse = db.deleteStore(storeid);
+            if (deletestoreresponse.result)
+            {
+                Response.Write("<script>alert('" + deletestoreresponse.response + "')</script>");
+                return View("ViewStores");
+            }
+            else
+            {
+                Response.Write("<script>alert('" + deletestoreresponse.response + "')</script>");
+                return View("ViewStores");
+            }
+        }
         public ActionResult GoToLogin()
         {
             return View("Login");

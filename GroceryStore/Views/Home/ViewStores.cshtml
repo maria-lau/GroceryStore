@@ -6,24 +6,33 @@
         <a style=color:#785ff4>Our </a><a style=color:#1185f9>Store </a><a style=color:#3ae2fc>Locations</a>
         <br />
     </h1>
-    @if (ViewBag.foundStores = true)
-    {
-        foreach (string store in ViewBag.storelist)
+    <br /> <br />
+    <div style="text-align:center;">
+        @if (ViewBag.foundStores = true)
         {
-            <div style="width:200px;">
+            foreach (string store in ViewBag.storelist)
+            {
+                <div style="width:200px; display: inline-block;">
                     <p>@Html.Raw(store)</p>
-            </div>
+                </div>
+            }
         }
-    }
-    else
-    {
-
-    }
-
+        else
+        {
+            <p>No Stores in the Database.</p>
+        }
+    </div>
+    <br /> <br />
     <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
         @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
         {
-            <a href="/Home/CreateStore"><button type="button" class="createbtn">Add New Store</button></a>
+            <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" href="/Home/CreateStore">Add New Store</a>
+            <br /> <br /><br/>
+            using (Html.BeginForm("DeleteStore", "Home", FormMethod.Post))
+            {
+                 @Html.TextBox("storeid", null, new { @placeholder = "Enter ID of Store to be Deleted", required = "required" })<br />
+            <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;"value="Delete Store"/>
+             }
         }
     </div>
 </div>
@@ -58,30 +67,10 @@
             box-sizing: border-box;
         }
 
-    /* Set a style for all buttons */
-    button {
-        float: none;
-        background-color: #785ff4;
-        color: white;
-        padding: 10px 15px;
-        margin: 8px 0;
-        border: none;
-        cursor: pointer;
-        width: 200px;
-        height: 90px;
-    }
-
-        /* Add a hover effect for buttons */
-        button:hover {
-            opacity: 0.8;
-        }
-
-    /* Extra style for the cancel button (red) */
-    .createbtn {
-        width: 200px;
-        padding: 10px 15px;
-        background-color: #1185f9;
-    }
+     /* Add a hover effect for buttons */
+     button:hover {
+        opacity: 0.8;
+     }
 
     /* Add padding to containers */
     .container {
