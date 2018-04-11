@@ -8,11 +8,10 @@
     </h1>
     @if (ViewBag.foundStores = true)
     {
-        @foreach (string store in ViewBag.storelist)
+        foreach (string store in ViewBag.storelist)
         {
             <div style="width:200px;">
                     <p>@Html.Raw(store)</p>
-                </div>
             </div>
         }
     }

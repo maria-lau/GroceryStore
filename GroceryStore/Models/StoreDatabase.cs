@@ -96,7 +96,7 @@ namespace GroceryStore.Models
             {
                 try
                 {
-                    string query = @"SELECT * FROM " + databaseName + @".store " + @"';";
+                    string query = @"SELECT * FROM " + databaseName + @".store " + @";";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
 
