@@ -28,9 +28,9 @@ namespace GroceryStore.Models
             return instance;
         }
 
-        public List<Tuple<int, string, int, double>> getGroceryItems()
+        public List<Tuple<int, string, double, int>> getGroceryItems()
         {
-            List<Tuple<int, string, int, double>> items = new List<Tuple<int, string, int, double>>(); ;
+            List<Tuple<int, string, double, int>> items = new List<Tuple<int, string, double, int>>(); ;
             if (openConnection() == true)
             {
                 try
@@ -46,9 +46,9 @@ namespace GroceryStore.Models
                         {
                             int sku = dataReader.GetInt32(0);
                             string name = dataReader.GetString(1);
-                            int quantity = dataReader.GetInt32(4);
                             double price = dataReader.GetDouble(3);
-                            items.Add(Tuple.Create(sku, name, quantity, price));
+                            int quantity = dataReader.GetInt32(4);
+                            items.Add(Tuple.Create(sku, name, price, quantity));
                         }
                         dataReader.Close();
                         return items;
@@ -74,7 +74,7 @@ namespace GroceryStore.Models
                     closeConnection();
                 }
             }
-            return new List<Tuple<int, string, int, double>>();
+            return new List<Tuple<int, string, double, int>>();
         }
 
 

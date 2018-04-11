@@ -299,6 +299,18 @@ namespace GroceryStore.Controllers
 
         public ActionResult Shop()
         {
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            List<Tuple<int, string, double, int>> templist = db.getGroceryItems();
+            if(templist.Count() > 0)
+            {
+                ViewBag.foundgroceries = true;
+                ViewBag.grocerylist = templist;
+            }
+            else
+            {
+                ViewBag.foundgroceries = false;
+            }
+            
             return View();
         }
 
