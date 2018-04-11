@@ -1,12 +1,57 @@
 ﻿
 <link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
 
+
 <div class="w3-container w3-display-middle" style="padding-top:150px;">
     <h1 class="w3-animate-left">
-        <a style=color:#785ff4>Work </a><a style=color:#1185f9>in </a><a style=color:#3ae2fc>Progress</a>
+        <a style=color:#785ff4>Your </a><a style=color:#1185f9>Cart </a><a style=color:#3ae2fc>Contents</a>
         <br />
-        Where Cart Contents Go
     </h1>
+    <br /> <br />
+    <div style="text-align:left; padding-left:300px;">
+        @if (ViewBag.EmptyCart = false)
+        {
+            foreach (Tuple<int, string, int> item in ViewBag.cartlist)
+            {
+                <div style="width:200px;display: inline-block;">
+                    <p>@item.Item2 (Item SKU:@item.Item1)</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    <p> Price: @item.Item3 each</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    <p>@item.Item4 in Stock</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    @using (Html.BeginForm("addToCart", "Home", FormMethod.Post))
+                    {
+                        @Html.TextBox("quantity", null, new { @placeholder = "qty", required = "required", type = "number", min = "1", step = "1", style = "width:50px;display: inline-block;" })
+                        <input type="hidden" value="@item.Item1" name="sku" />
+                        <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 120px;" value="Add to Cart" />
+                    }
+                </div>
+                <br />
+                <br />
+            }
+        }
+        else
+        {
+            <p>You currently have nothing in your cart.</p>
+        }
+    </div>
+    <br /> <br />
+    <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
+        @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
+        {
+            <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" href="/Home/CreateStore">Add New Store</a>
+            <br /> <br /><br /><br />
+            using (Html.BeginForm("DeleteStore", "Home", FormMethod.Post))
+            {
+                @Html.TextBox("storeid", null, new { @placeholder = "Enter ID of Store to be Deleted", required = "required" })<br />
+                <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" value="Delete Store" />
+            }
+        }
+    </div>
 </div>
 
 
@@ -31,7 +76,7 @@
 
         /* Full-width inputs */
         input[type=text], input[type=password] {
-            width: 100%;
+            width: 20px;
             padding: 12px 20px;
             margin: 8px 0;
             display: inline-block;
@@ -39,29 +84,9 @@
             box-sizing: border-box;
         }
 
-    /* Set a style for all buttons */
-    button {
-        float: none;
-        background-color: #785ff4;
-        color: white;
-        padding: 10px 15px;
-        margin: 8px 0;
-        border: none;
-        cursor: pointer;
-        width: 200px;
-        height: 90px;
-    }
-
-        /* Add a hover effect for buttons */
-        button:hover {
-            opacity: 0.8;
-        }
-
-    /* Extra style for the cancel button (red) */
-    .createbtn {
-        width: 200px;
-        padding: 10px 15px;
-        background-color: #1185f9;
+    /* Add a hover effect for buttons */
+    button:hover {
+        opacity: 0.8;
     }
 
     /* Add padding to containers */

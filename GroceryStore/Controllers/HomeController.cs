@@ -246,6 +246,19 @@ namespace GroceryStore.Controllers
             return View();
         }
 
+        public ActionResult addToCart(int quantity, int sku, double price)
+        {
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Response addtocartresponse = db.addItemtoCart(Globals.getUser(), sku, quantity, (quantity*price));
+            if (addtocartresponse.result)
+            {
+                return RedirectToAction("Shop", new { itemAdded = 1, message = addtocartresponse.response});
+            }
+            else
+            {
+                return RedirectToAction("Shop", new { itemAdded = 2, message = addtocartresponse.response});
+            }
+        }
 
         public ActionResult ViewCart()
         {
@@ -253,20 +266,14 @@ namespace GroceryStore.Controllers
             GroceryDatabase db = GroceryDatabase.getInstance();
             Cart mycart = db.getCart(username);
 
-            if (mycart.cartcontents == null)
+            if (mycart.cartcontents.Count < 1)
             {
                 ViewBag.EmptyCart = "true";
             }
             else
             {
                 ViewBag.EmptyCart = "false";
-                //for(int i = 0; i < mycart.cartcontents.Count; i++)
-                //{
-                //    int sku = mycart.cartcontents.ElementAt(i).Item1;
-                //    string itemname = mycart.cartcontents.ElementAt(i).Item2;
-                //    int quantity = mycart.cartcontents.ElementAt(i).Item3;
-                //}
-      
+                ViewBag.cartlist = mycart.cartcontents;
             }
             return View();
         }
@@ -297,8 +304,17 @@ namespace GroceryStore.Controllers
             }
         }
 
-        public ActionResult Shop()
+        public ActionResult Shop(int itemAdded = 0, string message ="")
         {
+            if (itemAdded == 1)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+            else if (itemAdded == 2)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+
             GroceryDatabase db = GroceryDatabase.getInstance();
             List<Tuple<int, string, double, int>> templist = db.getGroceryItems();
             if(templist.Count() > 0)
