@@ -28,9 +28,9 @@ namespace GroceryStore.Models
             return instance;
         }
 
-        public List<Tuple<int, string, string, int>> getGroceryItems()
+        public List<Tuple<int, string, double, int>> getGroceryItems()
         {
-            List<Tuple<int, string, string, int>> items = new List<Tuple<int, string, string, int>>(); ;
+            List<Tuple<int, string, double, int>> items = new List<Tuple<int, string, double, int>>(); ;
             if (openConnection() == true)
             {
                 try
@@ -46,8 +46,7 @@ namespace GroceryStore.Models
                         {
                             int sku = dataReader.GetInt32(0);
                             string name = dataReader.GetString(1);
-                            double temp = dataReader.GetDouble(3);
-                            string price = temp.ToString("C");
+                            double price = dataReader.GetDouble(3);
                             int quantity = dataReader.GetInt32(4);
                             items.Add(Tuple.Create(sku, name, price, quantity));
                         }
@@ -75,7 +74,7 @@ namespace GroceryStore.Models
                     closeConnection();
                 }
             }
-            return new List<Tuple<int, string, string, int>>();
+            return new List<Tuple<int, string, double, int>>();
         }
 
 
@@ -138,7 +137,7 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
-        public Response addItemtoCart(string username, int sku, int quantity)
+        public Response addItemtoCart(string username, int sku, int quantity, double price)
         {
             bool result = false;
             string message = "";
@@ -158,7 +157,9 @@ namespace GroceryStore.Models
                         int oldquantity = dataReader.GetInt32(2);
                         dataReader.Close();
                         int newquantity = oldquantity + quantity;
-                        query = "UPDATE " + databaseName + ".cart SET quantity='" + newquantity + "' WHERE sku='" + sku + "' AND username='" + username + "';";
+                        double oldprice = dataReader.GetDouble(3);
+                        double newprice = oldprice + price;
+                        query = "UPDATE " + databaseName + ".cart SET quantity='" + newquantity + "', totalItemPrice= '" + newprice + "' WHERE sku='" + sku + "' AND username='" + username + "';";
                         command = new MySqlCommand(query, connection);
                         command.ExecuteNonQuery();
                         result = true;
@@ -168,9 +169,9 @@ namespace GroceryStore.Models
                     {
                         dataReader.Close();
 
-                        query = @"INSERT INTO " + dbname + @".cart(username, sku, quantity) " +
+                        query = @"INSERT INTO " + dbname + @".cart(username, sku, quantity, totalItemPrice) " +
                             @"VALUES('" + username + @"', '" + sku +
-                            @"', '" + quantity + @"');";
+                            @"', " + quantity + @"," + price +  @");";
 
 
                         command = new MySqlCommand(query, connection);
@@ -216,15 +217,15 @@ namespace GroceryStore.Models
 
                     if (dataReader.HasRows)
                     {
-                        cartresult.cartcontents = new List<Tuple<int, string, int>>();
+                        cartresult.cartcontents = new List<Tuple<int, string, int, double>>();
                         while (dataReader.Read())
                         {
                             int sku = dataReader.GetInt32(1);
                             int quantity= dataReader.GetInt32(2);
                             string groceryitemname = dataReader.GetString(0);
-                            
+                            double price = dataReader.GetDouble(3);
                          
-                            cartresult.AddtoCart(sku, groceryitemname, quantity);
+                            cartresult.AddtoCart(sku, groceryitemname, quantity, price);
                             
                         }
                     }
@@ -353,6 +354,14 @@ namespace GroceryStore.Models
                         new Column
                         (
                             "quantity", "INT",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                        new Column
+                        (
+                            "totalItemPrice", "DECIMAL(5, 2)",
                             new string[]
                             {
                                 "NOT NULL"

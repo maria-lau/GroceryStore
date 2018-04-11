@@ -13,16 +13,16 @@ namespace GroceryStore.Models
            // cartcontents = new List<Tuple<int, string, int>>();
         }
 
-        public List<Tuple<int, string, int>> cartcontents { get; set; } = null;
+        public List<Tuple<int, string, int, double>> cartcontents { get; set; } = null;
 
-        public void AddtoCart(int SKU, string itemname, int quantity)
+        public void AddtoCart(int SKU, string itemname, int quantity, double totalItemPrice)
         {
-            cartcontents.Add(Tuple.Create(SKU, itemname, quantity));
+            cartcontents.Add(Tuple.Create(SKU, itemname, quantity, totalItemPrice));
         }
 
-        public void DeleteFromCart(int SKU, string itemname, int quantity)
+        public void DeleteFromCart(int SKU, string itemname, int quantity, double totalItemPrice)
         {
-            cartcontents.RemoveAt(cartcontents.IndexOf(Tuple.Create(SKU, itemname, quantity)));
+            cartcontents.RemoveAt(cartcontents.IndexOf(Tuple.Create(SKU, itemname, quantity, totalItemPrice)));
         }
     }
 }
