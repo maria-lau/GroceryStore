@@ -212,10 +212,10 @@ namespace GroceryStore.Models
                     {
                         // cart has item, so just update quantity
                         int oldquantity = dataReader.GetInt32(2);
-                        dataReader.Close();
                         int newquantity = oldquantity + quantity;
                         double oldprice = dataReader.GetDouble(3);
                         double newprice = oldprice + price;
+                        dataReader.Close();
                         query = "UPDATE " + databaseName + ".cart SET quantity='" + newquantity + "', totalItemPrice= '" + newprice + "' WHERE sku='" + sku + "' AND username='" + username + "';";
                         command = new MySqlCommand(query, connection);
                         command.ExecuteNonQuery();
@@ -234,7 +234,7 @@ namespace GroceryStore.Models
                         command = new MySqlCommand(query, connection);
                         command.ExecuteNonQuery();
                         result = true;
-                        message = "Item added inventory successfully.";
+                        message = "Item added to cart successfully.";
                     }
                 }
                 catch (MySqlException e)
@@ -357,6 +357,7 @@ namespace GroceryStore.Models
                     MySqlDataReader dataReader = command.ExecuteReader();
                     if (dataReader.HasRows)
                     {
+                        dataReader.Read();
                         string itemname = dataReader.GetString(0);
                         message = itemname;
                         result = true;
@@ -482,8 +483,7 @@ namespace GroceryStore.Models
                             "username", "VARCHAR(50)",
                             new string[]
                             {
-                                "NOT NULL",
-                                "UNIQUE"
+                                "NOT NULL"
                             }, true
                         ),
                         new Column
