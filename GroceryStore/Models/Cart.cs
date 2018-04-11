@@ -9,8 +9,8 @@ namespace GroceryStore.Models
     {
         public Cart()
         {
-            // Each tuple in the list will have <int SKU, string name, int quantity>
-           // cartcontents = new List<Tuple<int, string, int>>();
+            // Each tuple in the list will have <int SKU, string name, int quantity, double price>
+           // cartcontents = new List<Tuple<int, string, int, double price>>();
         }
 
         public List<Tuple<int, string, int, double>> cartcontents { get; set; } = null;

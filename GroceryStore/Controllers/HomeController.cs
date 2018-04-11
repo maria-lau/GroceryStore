@@ -268,11 +268,14 @@ namespace GroceryStore.Controllers
 
             if (mycart.cartcontents.Count < 1)
             {
-                ViewBag.EmptyCart = "true";
+                ViewBag.EmptyCart = true;
             }
             else
             {
-                ViewBag.EmptyCart = "false";
+                ViewBag.EmptyCart = false;
+
+
+
                 ViewBag.cartlist = mycart.cartcontents;
             }
             return View();

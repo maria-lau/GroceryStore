@@ -264,11 +264,12 @@ namespace GroceryStore.Models
         public Cart getCart(string username)
         {
             Cart cartresult = new Cart();
+            cartresult.cartcontents = new List<Tuple<int, string, int, double>>();
              if(openConnection() == true)
             {
                 try
                 {
-                    string query = @"SELECT * FROM " + databaseName + @".cart " + @"WHERE username='" + username + @"' " + @"';";
+                    string query = @"SELECT * FROM " + databaseName + @".cart " + @"WHERE username='" + username + @"';";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
 
