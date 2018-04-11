@@ -137,6 +137,63 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
+        public Response deleteGroceryItem(int sku)
+        {
+            bool result = false;
+            string message = "";
+            if(openConnection() == true)
+            {
+                try
+                {
+                    //check that the grocery item that is to be deleted exists in the database by searching for its sku
+                    string query = @"SELECT * FROM " + databaseName + @".groceryitem " + @"WHERE sku='" + sku + @"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (!dataReader.HasRows)
+                    {
+                        dataReader.Close();
+                        result = false;
+                        message = "Error deleting grocery item. No grocery item with this sku exists";
+                    }
+                    else //if the grocery item exists, delete the tuple
+                    {
+                        dataReader.Close();
+                        query = @"DELETE FROM " + databaseName + @".groceryitem " + @"WHERE sku='" + sku + @"';";
+                        command = new MySqlCommand(query, connection);
+                        command.ExecuteNonQuery();
+
+                        result = true;
+                        message = "Success, The grocery item with sku # = " + sku + " has been deleted";
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error :" + e.Number + e.Message);
+                    message = e.Message;
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error:" + e.Message);
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                message = "Unable to connect to database";
+            }
+            return new Response(result, message);
+        }
+
+           
+        
+
         public Response addItemtoCart(string username, int sku, int quantity, double price)
         {
             bool result = false;

@@ -146,7 +146,7 @@ namespace GroceryStore.Models
             if (openConnection() == true)
             {
                 try
-                {   //check that the store that is to be deleted exists in the database by searching for its storeid and seeing
+                {   //check that the store that is to be deleted exists in the database by searching for its storeid
                     string query = @"SELECT * FROM " + databaseName + @".store " + @"WHERE storeid='" + storeID + @"';";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
@@ -154,7 +154,7 @@ namespace GroceryStore.Models
                     if (!dataReader.HasRows)
                     {
                         dataReader.Close();
-                        return new Response(false, "Eror deleting store. No store with this storeID exists");
+                        return new Response(false, "Error deleting store. No store with this storeID exists");
                     }
                     else //if the store exists, delete the tuple
                     {
