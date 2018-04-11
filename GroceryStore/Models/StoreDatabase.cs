@@ -138,6 +138,50 @@ namespace GroceryStore.Models
 
             return allStores;
         }
+
+        public Response deleteStore(int storeID)
+        {
+            bool result = false;
+            string message = "";
+            if (openConnection() == true)
+            {
+                try
+                {   //check that the store that is to be deleted exists in the database by searching for its storeid and seeing
+                    string query = @"SELECT * FROM " + databaseName + @".store " + @"WHERE storeid='" + storeID + @"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (!dataReader.HasRows)
+                    {
+                        return new Response(false, "No store with this storeID exists");
+                    }
+                    else //if the store exists, delete the tuple
+                    {
+                        query = @"DELETE FROM " + databaseName + @".store " + @"WHERE storeid='" + storeID + @"';";
+                        command = new MySqlCommand(query, connection);
+                        command.ExecuteNonQuery();
+
+                        return new Response(true, "Store deleted");
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete insert new store into database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete insert new store into database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            result = true;
+            return new Response(result, message);
+        }
     }
     /// <summary>
     /// This portion of the class contains the member variables as well as the schema definition in the form of Table/Column objects
