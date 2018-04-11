@@ -344,7 +344,54 @@ namespace GroceryStore.Models
 
             return new Response(result, message);
         }
+        public Response getItemName(int sku)
+        {
+            bool result = false;
+            string message = "";
+            if (openConnection() == true)
+            {
+                try
+                {
+                    string query = @"SELECT name FROM " + databaseName + @".groceryitem " + @"WHERE sku='" + sku + @"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        string itemname = dataReader.GetString(0);
+                        message = itemname;
+                        result = true;
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                        message = "No item with this sku found";
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                message = "Unable to connect to database";
+            }
+                return new Response(result, message);
+        }
     }
+
+    
 
 
     /// <summary>
