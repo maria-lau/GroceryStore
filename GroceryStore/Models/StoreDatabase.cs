@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 
 namespace GroceryStore.Models
 {
@@ -85,6 +86,57 @@ namespace GroceryStore.Models
             }
 
             return new Response(result, message);
+        }
+
+        public List<Store> getAllStores()
+        {
+            List<Store> allStores = new List<Store>();
+
+            if (openConnection() == true)
+            {
+                try
+                {
+                    string query = @"SELECT * FROM " + databaseName + @".store " + @"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    //if there nothing is sent, return empty list
+                    if (!dataReader.HasRows)
+                    {
+                        return allStores;
+                    }
+
+                    //for every tuple that is read, insert the attributes into an individual store model(object)
+                    while (dataReader.Read())
+                    {
+                        Store currentStore = new Store();
+                        currentStore.storeid = dataReader.GetInt32(0);
+                        currentStore.street = dataReader.GetString(1);
+                        currentStore.city = dataReader.GetString(2);
+                        currentStore.province = dataReader.GetString(3);
+                        currentStore.postalcode = dataReader.GetString(4);
+                        currentStore.phone = dataReader.GetString(5);
+                        allStores.Add(currentStore);
+                    }
+                    dataReader.Close();
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to complete insert new store into database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to complete insert new store into database." +
+                        " Error:" + e.Message);                    
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+
+            return allStores;
         }
     }
     /// <summary>
