@@ -260,24 +260,92 @@ namespace GroceryStore.Controllers
             }
         }
 
-        public ActionResult ViewCart()
+        public ActionResult ViewCart(int itemoperation  = 0, string message = "")
         {
+            if (itemoperation == 1)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+            else if (itemoperation == 2)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+
             string username = Globals.getUser();
             GroceryDatabase db = GroceryDatabase.getInstance();
-            Cart mycart = db.getCart(username);
+            Cart tempcart = db.getCart(username);
+            double carttotal = 0;
 
-            if (mycart.cartcontents.Count < 1)
+            if (tempcart.cartcontents.Count < 1)
             {
-                ViewBag.EmptyCart = "true";
+                ViewBag.EmptyCart = true;
             }
             else
             {
-                ViewBag.EmptyCart = "false";
+                ViewBag.EmptyCart = false;
+                Cart mycart = new Cart();
+                mycart.cartcontents = new List<Tuple<int, string, int, double>>();
+                for(int i = 0; i < tempcart.cartcontents.Count(); i++)
+                {
+                    Response getitemnameresponse = db.getItemName(tempcart.cartcontents[i].Item1);
+                    string itemname = "";
+                    if (getitemnameresponse.result)
+                    {
+                        itemname = getitemnameresponse.response;
+                    }
+                    else
+                    {
+                        itemname = "ItemName Error";
+                    }
+                    mycart.AddtoCart(tempcart.cartcontents[i].Item1, itemname, tempcart.cartcontents[i].Item3, tempcart.cartcontents[i].Item4);
+                    carttotal = carttotal + tempcart.cartcontents[i].Item4;
+                }
                 ViewBag.cartlist = mycart.cartcontents;
+                ViewBag.carttotal = carttotal;
             }
             return View();
         }
-        
+
+        public ActionResult deleteFromCart(int sku)
+        {
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Response deletecartitemresponse = db.deleteItemFromCart(Globals.getUser(), sku);
+            if (deletecartitemresponse.result)
+            {
+                return RedirectToAction("ViewCart", new { itemoperation = 1, message = deletecartitemresponse.response });
+            }
+            else
+            {
+                return RedirectToAction("ViewCart", new { itemoperation = 2, message = deletecartitemresponse.response });
+            }
+        }
+
+       [HttpPost]
+       public ActionResult SubmitOrder(double finalcartprice) {
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Cart mycart = db.getCart(Globals.getUser());
+
+            if (mycart.cartcontents.Count() < 1)
+            {
+                Response.Write("<script>alert('There is nothing in your cart. So no order may be submitted.')</script>");
+                return RedirectToAction("ViewCart");
+            }
+            else
+            {
+                Order neworder = new Order();
+                neworder.orderprice = finalcartprice;
+                for (int i = 0; i < mycart.cartcontents.Count(); i++)
+                {
+                    neworder.AddtoOrder(mycart.cartcontents[i].Item1, mycart.cartcontents[i].Item3);
+                }
+
+                OrderDatabase orderdb = OrderDatabase.getInstance();
+                Response submitorderresponse = orderdb.placeOrder(Globals.getUser(), neworder);
+                
+
+            }
+       }
+
         [HttpPost]
         public ActionResult CreateStorePost(int storeid, string street, string city, string province,string postalCode, string phone)
         {
