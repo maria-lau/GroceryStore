@@ -7,22 +7,28 @@
         <br />
     </h1>
     <br /> <br />
-    <div style="text-align:left; padding-left:200px;">
+    <div style="text-align:left; padding-left:300px;">
         @if (ViewBag.foundgroceries = true)
         {
-            foreach (Tuple<int, string, double, int> item in ViewBag.grocerylist)
+            foreach (Tuple<int, string, string, int> item in ViewBag.grocerylist)
             {
                 <div style="width:200px;display: inline-block;">
                 <p>@item.Item2</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
-                <p> Price: $@item.Item3 each</p>
+                <p> Price: @item.Item3.ToString("C") each</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
                 <p>@item.Item4 in Stock</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
-                <p>@item.Item4 in Stock</p>
+                    @using (Html.BeginForm("addToCart", "Home", FormMethod.Post))
+                    {
+                         @Html.TextBox("quantity", null, new {@placeholder = "qty", required = "required", type = "number", min="1", step="1",style = "width:50px;display: inline-block;"})
+                         <input type="hidden" value="@item.Item1" name="sku" />
+                         <input style="hidden" value="@item.Item3" name="price"/>
+                         <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 120px;" value="Add to Cart" />
+                    }
                 </div>
                 <br />
                 <br />
@@ -70,7 +76,7 @@
 
         /* Full-width inputs */
         input[type=text], input[type=password] {
-            width: 100%;
+            width: 20px;
             padding: 12px 20px;
             margin: 8px 0;
             display: inline-block;
