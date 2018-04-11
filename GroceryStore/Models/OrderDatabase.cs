@@ -43,17 +43,22 @@ namespace GroceryStore.Models
 
                     if (newdeliverynum != deliverynumber)
                     {
-                        addDelivery(newdeliverynum, order.orderdate.AddDays(3));
+                        Response delResponse = addDelivery(newdeliverynum, order.orderdate.AddDays(3));
+                        if (!delResponse.result)
+                        {
+                            return new Response(false, "Delivery could not be added, order creation aborted.");
+                        }
                     }
                     if (openConnection() == true)
                     {
-                        string query = @"INSERT INTO " + dbname + @".order(username, orderdate, deliveryid) " +
+                        for(int i = 0; i < order.ordercontents.Count; i++)
+                        {
+                            string query = @"INSERT INTO " + dbname + @".order " +
                             @"VALUES('" + username + @"', '" + order.orderdate.Date.ToString("d") +
                             @"', '" + newdeliverynum + @"');";
-
-
-                        MySqlCommand command = new MySqlCommand(query, connection);
-                        command.ExecuteNonQuery();
+                            MySqlCommand command = new MySqlCommand(query, connection);
+                            command.ExecuteNonQuery();
+                        }                    
                         result = true;
                         ordernumber = newordernum;
                         newdeliverynum = deliverynumber;
@@ -299,10 +304,24 @@ namespace GroceryStore.Models
                             "orderid", "INT",
                             new string[]
                             {
-                                "NOT NULL",
-                                "UNIQUE",
-                                 "AUTO_INCREMENT"
+                                "NOT NULL"
                             }, true
+                        ),
+                         new Column
+                        (
+                            "sku", "INT",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, true
+                        ),
+                          new Column
+                        (
+                            "quantity", "INT",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
                         ),
                         new Column
                         (
@@ -323,6 +342,14 @@ namespace GroceryStore.Models
                          new Column
                         (
                             "deliveryid", "INT",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                          new Column
+                        (
+                            "orderPrice", "DECIMAL(5, 2)",
                             new string[]
                             {
                                 "NOT NULL"
