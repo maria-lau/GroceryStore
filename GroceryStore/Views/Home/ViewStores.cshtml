@@ -27,7 +27,7 @@
         @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
         {
             <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" href="/Home/CreateStore">Add New Store</a>
-            <br /> <br /><br/>
+            <br /> <br /><br/><br />
             using (Html.BeginForm("DeleteStore", "Home", FormMethod.Post))
             {
                  @Html.TextBox("storeid", null, new { @placeholder = "Enter ID of Store to be Deleted", required = "required" })<br />

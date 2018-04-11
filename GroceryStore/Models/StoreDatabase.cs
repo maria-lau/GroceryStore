@@ -153,15 +153,17 @@ namespace GroceryStore.Models
 
                     if (!dataReader.HasRows)
                     {
-                        return new Response(false, "No store with this storeID exists");
+                        dataReader.Close();
+                        return new Response(false, "Eror deleting store. No store with this storeID exists");
                     }
                     else //if the store exists, delete the tuple
                     {
+                        dataReader.Close();
                         query = @"DELETE FROM " + databaseName + @".store " + @"WHERE storeid='" + storeID + @"';";
                         command = new MySqlCommand(query, connection);
                         command.ExecuteNonQuery();
 
-                        return new Response(true, "Store deleted");
+                        return new Response(true, "Success, The store #"+ storeID + " has been deleted");
                     }
                 }
                 catch (MySqlException e)

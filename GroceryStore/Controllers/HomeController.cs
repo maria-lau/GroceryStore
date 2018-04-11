@@ -17,8 +17,17 @@ namespace GroceryStore.Controllers
             return View();
         }
 
-        public ActionResult ViewStores()
+        public ActionResult ViewStores(int storeDeleted = 0)
         {
+            if (storeDeleted == 1)
+            {
+                Response.Write("<script>alert('Successfully Deleted Store.')</script>");
+            }
+            else if(storeDeleted == 2)
+            {
+                Response.Write("<script>alert('The store could not be deleted. Store ID does not exist.')</script>");
+            }
+
             ViewBag.Message = "Fresh Direct Locations";
 
             StoreDatabase db = StoreDatabase.getInstance();
@@ -43,21 +52,21 @@ namespace GroceryStore.Controllers
             return View();
         }
 
+
         public ActionResult DeleteStore(int storeid)
         {
             StoreDatabase db = StoreDatabase.getInstance();
             Response deletestoreresponse = db.deleteStore(storeid);
             if (deletestoreresponse.result)
-            {
-                Response.Write("<script>alert('" + deletestoreresponse.response + "')</script>");
-                return View("ViewStores");
+            {   
+                return RedirectToAction("ViewStores", new { storeDeleted = 1 });
             }
             else
             {
-                Response.Write("<script>alert('" + deletestoreresponse.response + "')</script>");
-                return View("ViewStores");
+                return RedirectToAction("ViewStores", new { storeDeleted = 2 });
             }
         }
+
         public ActionResult GoToLogin()
         {
             return View("Login");
