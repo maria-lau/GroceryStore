@@ -169,13 +169,13 @@ namespace GroceryStore.Models
                 }
                 catch (MySqlException e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to delete grocery item into database." +
                         " Error :" + e.Number + e.Message);
                     message = e.Message;
                 }
                 catch (Exception e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to delete grocery item into database." +
                         " Error:" + e.Message);
                     message = e.Message;
                 }
@@ -211,6 +211,7 @@ namespace GroceryStore.Models
                     }
                     else
                     {
+                        dataReader.Close();
                         //check if SKU's of ingredients exist
                         bool AllSkuExist = true;
                         List<int> notFoundItems = new List<int>();
@@ -246,7 +247,7 @@ namespace GroceryStore.Models
                             //enter SKU and quantity pairs into recipecontainsgroceryitem with the recipe id
                             for(int i = 0; i < recipe.ingredients.Count; i++)
                             {
-                                query = "INSERT INTO " + dbname + ".recipecontainsgroceryitems VALUES(" + recipe.ingredients[i].Item1 +
+                                query = "INSERT INTO " + dbname + ".recipecontainsgroceryitem VALUES(" + recipe.ingredients[i].Item1 +
                                    ", " + recipe.recipeid + ", " + recipe.ingredients[i].Item2 + ");";
                                 command = new MySqlCommand(query, connection);
                                 command.ExecuteNonQuery();
@@ -276,14 +277,60 @@ namespace GroceryStore.Models
             }
 
             return new Response(result, message);
-        }   
-        
+        }
+
+        public List<Tuple<int, string, int>> getRecipes()
+        {
+            List<Tuple<int, string, int>> recipes = new List<Tuple<int, string, int>>();
+            if (openConnection() == true)
+            {
+                try
+                {
+                    string query = @"SELECT * FROM grocerydb.recipe;";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    //if recipes were found
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            int recipeid = dataReader.GetInt32(0);
+                            string instructions = dataReader.GetString(1);
+                            int timereq = dataReader.GetInt32(2);
+                            recipes.Add(Tuple.Create(recipeid, instructions, timereq));
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to get recipes from the database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to get recipes database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            return recipes;
+        }
+
         public Response addRecipeToCart(string username, int recipeid)
         {
             bool result = false;
             string message = "";
             List<Tuple<int, int>> ingredients = new List<Tuple<int, int>>();
-            if(openConnection() == true)
+            if (openConnection() == true)
             {
                 try
                 {
@@ -311,7 +358,7 @@ namespace GroceryStore.Models
                     }
                     //retrieve price of item from groceryitem table
                     List<Tuple<int, int, double>> ingredientsForCart = new List<Tuple<int, int, double>>();
-                    for(int i = 0; i < ingredients.Count; i++)
+                    for (int i = 0; i < ingredients.Count; i++)
                     {
                         query = "SELECT sellingprice FROM " + dbname + ".groceryitem WHERE sku=" + ingredients[i].Item1 + ";";
                         command = new MySqlCommand(query, connection);
@@ -328,7 +375,7 @@ namespace GroceryStore.Models
 
                     //insert items into cart
                     bool allItemsAdded = true;
-                    for(int i = 0; i < ingredientsForCart.Count; i++)
+                    for (int i = 0; i < ingredientsForCart.Count; i++)
                     {
                         Response addItemToCartResponse = addItemtoCart(username, ingredientsForCart[i].Item1, ingredientsForCart[i].Item2,
                            ingredientsForCart[i].Item3);
@@ -361,9 +408,7 @@ namespace GroceryStore.Models
                     closeConnection();
                 }
             }
-
             return new Response(result, message);
-
         }
 
         public Response addItemtoCart(string username, int sku, int quantity, double price)
