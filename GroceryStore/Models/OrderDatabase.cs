@@ -126,13 +126,70 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
-        //public List<Tuple<int, string, string, string, string>> viewDeliveries(string username)
-        //{
-        //    List<Tuple<int, string, string, string, string>> userDeliveries = new List<Tuple<int, string, string, string, string>>();
+        //Returns a list of delivery attributes for a specific employee
+        /*
+         * viewDeliveries.Item1 = deliveryid
+         * viewDeliveries.Item2 = planneddeliverydate
+         * viewDeliveries.Item3 = actualdeliverydate
+         * viewDeliveries.Item4 = delivered
+         * viewDeliveries.Item5 = employeetodeliver
+         * */
+        public List<Tuple<int, string, string, string, string>> viewDeliveries(string username)
+        {
+            List<Tuple<int, string, string, string, string>> userDeliveries = new List<Tuple<int, string, string, string, string>>();
 
+            if(openConnection() == true)
+            {
+                try
+                {
+                    //retrieve all deliveries that belong to a specific employee
+                    string query = "SELECT * FROM  " + dbname + ".delivery WHERE employeetodeliver='" + username +"';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
 
-        //    return userDeliveries;
-        //}
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            int deliveryid = dataReader.GetInt32(0);
+                            string plannedDate = dataReader.GetString(1);
+                            string actualDate = dataReader.GetString(2);
+                            string delivered = dataReader.GetString(3);
+                            string employee = dataReader.GetString(4);
+
+                            Tuple<int, string, string, string, string> delivery = new Tuple<int, string, string, string, string>(
+                                deliveryid, plannedDate, actualDate, delivered, employee);
+
+                            userDeliveries.Add(delivery);
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                        closeConnection();
+                        return userDeliveries;
+                    }
+
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to view " + username + "'s deliveries." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to view " + username + "'s deliveries." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+
+            return userDeliveries;
+        }
 
         //Let employee confirm their devliery
         public Response confirmDelivery(string username, int deliveryid)
@@ -141,15 +198,14 @@ namespace GroceryStore.Models
             string message = "";
             if (openConnection() == true)
             {
-
                 try
                 {
                     //set delivered field to yes where the username and deliveryid match the parameters
-                    string query = "UPDATE " + dbname + ".delivery SET delivered='y', actualdeliverydate=" + DateTime.Today.ToString("d") + "WHERE username='" + username + "' AND deliveryid=" + deliveryid + ";";
+                    string query = "UPDATE " + dbname + ".delivery SET delivered='y', actualdeliverydate=" + DateTime.Today.ToString("d") + " WHERE employeetodeliver='" + username + "' AND deliveryid=" + deliveryid + ";";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.ExecuteNonQuery();
                     result = true;
-                    message = "Delivery: " + deliveryid + " confirmed";
+                    message = "Delivery: " + deliveryid + " confirmed.";
                 }
                 catch (MySqlException e)
                 {
