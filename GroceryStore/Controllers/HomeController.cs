@@ -368,6 +368,22 @@ namespace GroceryStore.Controllers
             return View();
         }
 
+        public ActionResult ViewAllDeliveries()
+        {
+            OrderDatabase db = OrderDatabase.getInstance();
+            List<Tuple<int, string, string, string, string>> deliveries = db.viewAllDeliveries();
+            if (deliveries.Count > 0)
+            {
+                ViewBag.founddeliveries = true;
+                ViewBag.deliverylist = deliveries;
+            }
+            else
+            {
+                ViewBag.founddeliveries = false;
+            }
+            return View();
+        }
+
         public ActionResult confirmDelivery(int deliveryid)
         {
             OrderDatabase db = OrderDatabase.getInstance();
@@ -590,6 +606,96 @@ namespace GroceryStore.Controllers
             else
             {
                 return RedirectToAction("Shop", new { itemoperation = 2, message = deletegroceryitemresponse.response });
+            }
+        }
+
+        public ActionResult Recipes(int itemoperation = 0, string message = "")
+        {
+            if (itemoperation == 1)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+            else if (itemoperation == 2)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            List<Tuple<int, string, int>> recipes = db.getRecipes();
+            if (recipes.Count() > 0)
+            {
+                ViewBag.foundrecipes = true;
+                ViewBag.recipelist = recipes;
+            }
+            else
+            {
+                ViewBag.foundrecipes = false;
+            }
+
+            return View();
+        }
+
+        public ActionResult AddRecipe(int itemoperation = 0, string message = "")
+        {
+            if (itemoperation == 1)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+            else if (itemoperation == 2)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            List<Tuple<int, string, double, int>> templist = db.getGroceryItems();
+            if (templist.Count() > 0)
+            {
+                ViewBag.foundgroceries = true;
+                ViewBag.grocerylist = templist;
+            }
+            else
+            {
+                ViewBag.foundgroceries = false;
+            }
+            return View();
+        }
+
+        public ActionResult AddRecipePost(int recipeid, string recipeitems, string instructions, int timerequired)
+        {
+            Recipe newrecipe = new Recipe();
+            newrecipe.recipeid = recipeid;
+            newrecipe.instructions = instructions;
+            newrecipe.timerequired = timerequired;
+
+            string[] items = recipeitems.Split(',');
+            for(int i=0; i < items.Length; i++)
+            {
+                string[] temp = items[i].Split(null);
+                newrecipe.ingredients.Add(Tuple.Create(Convert.ToInt32(temp[0]), Convert.ToInt32(temp[1])));
+            }
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Response addreciperesponse = db.insertRecipe(newrecipe);
+            if (addreciperesponse.result)
+            {
+                return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
+            }
+            else
+            {
+                return RedirectToAction("AddRecipes", new { itemoperation = 1, message = addreciperesponse.response });
+            }
+        }
+
+        public ActionResult addRecipeToCart(int recipeid)
+        {
+            GroceryDatabase db = GroceryDatabase.getInstance();
+            Response addreciperesponse = db.addRecipeToCart(Globals.getUser(), recipeid);
+            if (addreciperesponse.result)
+            {
+                return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
+            }
+            else
+            {
+                return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
             }
         }
     }

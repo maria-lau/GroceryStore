@@ -27,6 +27,7 @@
                     {
                         <li>@Html.ActionLink("View All Users", "ViewAllUsers", "Home")</li>
                         <li>@Html.ActionLink("View All Orders", "ViewAllOrders", "Home")</li>
+                        <li>@Html.ActionLink("View Deliveries", "ViewAllDeliveries", "Home")</li>
                     }
                     @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "employee")
                     {
@@ -35,6 +36,7 @@
                     @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
                     {
                         <li>@Html.ActionLink("Shop", "Shop", "Home")</li>
+                        <li>@Html.ActionLink("Recipes", "Recipes", "Home")</li>
                     }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

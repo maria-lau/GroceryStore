@@ -1,0 +1,107 @@
+﻿
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<div class="w3-container w3-display-middle" style="margin-top:50px;">
+    <h1 class="w3-animate-left">
+        <a style=color:#785ff4>Add </a><a style=color:#1185f9>New </a><a style=color:#3ae2fc>Recipe</a>
+    </h1>
+    @using (Html.BeginForm("AddRecipePost", "Home", FormMethod.Post))
+    {
+        <div class="container" style="text-align:center;">
+
+            @Html.TextBox("recipeid", null, new { @placeholder = "Enter Recipe ID", required = "required" })<br />
+
+            @if (ViewBag.foundgroceries == true)
+            {
+                <p style="display:inline-block;">Possible ingredients to use: </p>
+                foreach (Tuple<int, string, double, int> item in ViewBag.grocerylist)
+                {
+                    <p style="display:inline-block;">@item.Item2 (SKU: @item.Item1),&nbsp;</p>
+                }
+
+            }
+            else
+            {
+                <p>No groceries in system. Please add them before creating a recipe.</p>
+            }
+
+            <label>
+                Enter Recipe Ingredients by SKU and Quantity separated by a space and use commas between each ingredient
+                For example: sku1 quantity1,sku2 quantity2,sku3 quantity3
+                Do not use spaces or commmas in any other way.
+            </label>
+            @Html.TextBox("recipeitems", null, new { @placeholder = "Enter Ingredients & Quantities", required = "required" })<br />
+
+            @Html.TextBox("instructions", null, new { @placeholder = "Enter Instructions", required = "required" })<br />
+
+            @Html.TextBox("time required", null, new { @placeholder = "Enter # of minutes Needed for Preparation", required = "required" })<br />
+            <br />
+            <div style="text-align:center;">
+                <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 200px;" value="Add Recipe" />
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+
+    form {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0 auto;
+    }
+
+    input, textarea {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        width: 700px;
+        height: 40px;
+    }
+
+        input:focus, textarea:focus {
+            border-color: aquamarine;
+        }
+
+        /* Full-width inputs */
+        input[type=text], input[type=password], input[type=tel], input[type=email] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+
+
+    /* Add padding to containers */
+    .container {
+        padding: 16px;
+    }
+
+    a:hover {
+        color: #634cf7;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    h1 {
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+    }
+
+    p2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p3 {
+        position: absolute;
+        bottom: 100px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>
