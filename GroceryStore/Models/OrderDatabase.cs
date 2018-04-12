@@ -207,7 +207,7 @@ namespace GroceryStore.Models
                 try
                 {
                     //set delivered field to yes where the username and deliveryid match the parameters and set delivery date
-                    string query = "UPDATE " + dbname + ".delivery SET delivered='y', actualdeliverydate=" + DateTime.Today.Date.ToString("d") + " WHERE employeetodeliver='" + username + "' AND deliveryid=" + deliveryid + ";";
+                    string query = "UPDATE " + dbname + ".delivery SET delivered='y', actualdeliverydate='" + DateTime.Today.Date.ToString("d") + "' WHERE employeetodeliver='" + username + "' AND deliveryid=" + deliveryid + ";";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.ExecuteNonQuery();
                     result = true;
@@ -273,8 +273,6 @@ namespace GroceryStore.Models
                     else
                     {
                         dataReader.Close();
-                        closeConnection();
-                        return allOrders;
                     }
                 }
                 catch (MySqlException e)
