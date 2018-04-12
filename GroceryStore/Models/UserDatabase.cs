@@ -336,7 +336,7 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
-        public string getNextDeliveryWorker()
+        public string getNextDeliveryWorker(int nextdeliveryID)
         {
             string message = "";
             string query = @"SELECT COUNT(*) FROM " + databaseName + @".user " +
@@ -348,24 +348,24 @@ namespace GroceryStore.Models
                 try
                 {
                     MySqlCommand command = new MySqlCommand(query, connection);
-                    int employeenum = (int)command.ExecuteScalar();
-                    int whosturn = count%employeenum;
-                    count += 1;
-                    query = @"SELECT fname,lname FROM " + databaseName + @".user " + @"WHERE type='employee';";
+                    int employeenum = Convert.ToInt32(command.ExecuteScalar());
+
+                    int whosturnindex = nextdeliveryID%employeenum;
+                    query = @"SELECT username FROM " + databaseName + @".user " + @"WHERE type='employee';";
                     command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
                     // if tuples are returned
                     if (dataReader.HasRows)
                     {
-                        for(int i = 0; i <= whosturn; i++)
+                        for(int i = 0; i <= whosturnindex; i++)
                         {
                             dataReader.Read();
                         }
 
-                        string name = dataReader.GetString(0) + " " + dataReader.GetString(1);
+                        string username = dataReader.GetString(0);
                         dataReader.Close();
                         closeConnection();
-                        return name;
+                        return username;
                     }
                     // no tuples returned
                     else
@@ -379,10 +379,6 @@ namespace GroceryStore.Models
                 catch (Exception e)
                 {
                     message = e.Message;
-                }
-                finally
-                {
-                    closeConnection();
                 }
             }
             else

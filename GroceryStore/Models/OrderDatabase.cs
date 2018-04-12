@@ -11,11 +11,10 @@ namespace GroceryStore.Models
     public partial class OrderDatabase : AbstractDatabase
     {
         /// <summary>
+        /// <summary>
         /// Private default constructor to enforce the use of the singleton design pattern
         /// </summary>
         private OrderDatabase() { }
-        public static int ordernumber = 0;
-        public static int deliverynumber = 0;
 
         /// <summary>
         /// Gets the singleton instance of the database
@@ -38,31 +37,58 @@ namespace GroceryStore.Models
             {
                 try
                 {
-                    int newordernum = ordernumber + 1;
-                    int newdeliverynum = (newordernum / 5) + 1;
-
-                    if (newdeliverynum != deliverynumber)
+                    string query = "SELECT * FROM " + dbname + ".order ORDER BY id DESC LIMIT 1;";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    int newordernum = 0;
+                    int newdeliverynum = 0;
+                    if (!(dataReader.HasRows))
                     {
+                        // first insert
+                        dataReader.Close();
+                        newordernum = 1;
+                        newdeliverynum = 1;
                         Response delResponse = addDelivery(newdeliverynum, order.orderdate.AddDays(3));
-                        if (!delResponse.result)
+                        if (openConnection() == true)
                         {
-                            return new Response(false, "Delivery could not be added, order creation aborted.");
+                            for (int i = 0; i < order.ordercontents.Count; i++)
+                            {
+                                query = @"INSERT INTO " + dbname + @".order(orderid, sku, quantity, username, orderdate, deliveryid, orderprice)" +
+                                @"VALUES(" + newordernum + @", " + order.ordercontents[i].Item1 + @", " + order.ordercontents[i].Item2 + @", '" +
+                                    username + @"','" + order.orderdate.Date.ToString("d") + @"', " + newdeliverynum + @", " + Math.Round(order.orderprice,2) + @");";
+                                command = new MySqlCommand(query, connection);
+                                command.ExecuteNonQuery();
+                            }
+                            result = true;
+                            message = "New Order Added";
                         }
                     }
-                    if (openConnection() == true)
+                    else
                     {
-                        for(int i = 0; i < order.ordercontents.Count; i++)
+                        // not the first insert
+                        dataReader.Read();
+                        int currentid = dataReader.GetInt32(0);
+                        newordernum = dataReader.GetInt32(1) + 1;
+                        newdeliverynum = dataReader.GetInt32(6);
+                        dataReader.Close();
+                        if ((currentid % 3) == 0)
                         {
-                            string query = @"INSERT INTO " + dbname + @".order " +
-                            @"VALUES(" + newordernum + @", " + order.ordercontents[i].Item1 + @", " + order.ordercontents[i].Item2 + @", '" +
-                                username + @"', " + order.orderdate.Date.ToString("d") + @"', " + deliverynumber + @", " + order.orderprice + @");";
-                            MySqlCommand command = new MySqlCommand(query, connection);
-                            command.ExecuteNonQuery();
-                        }                    
-                        result = true;
-                        ordernumber = newordernum;
-                        newdeliverynum = deliverynumber;
-                        message = "New Order Added";
+                            newdeliverynum += 1;
+                            Response delResponse = addDelivery(newdeliverynum, order.orderdate.AddDays(3));
+                        }
+                        if (openConnection() == true)
+                        {
+                            for (int i = 0; i < order.ordercontents.Count; i++)
+                            {
+                                query = @"INSERT INTO " + dbname + @".order(orderid, sku, quantity, username, orderdate, deliveryid, orderprice)" +
+                                    @"VALUES(" + newordernum + @", " + order.ordercontents[i].Item1 + @", " + order.ordercontents[i].Item2 + @", '" +
+                                    username + @"','" + order.orderdate.Date.ToString("d") + @"', " + newdeliverynum + @", " + Math.Round(order.orderprice, 2) + @");";
+                                command = new MySqlCommand(query, connection);
+                                command.ExecuteNonQuery();
+                            }
+                            result = true;
+                            message = "New Order Added";
+                        }
                     }
                 }
                 catch (MySqlException e)
@@ -98,7 +124,7 @@ namespace GroceryStore.Models
                 try
                 {
                     UserDatabase db = UserDatabase.getInstance();
-                    string employeetodeliver = db.getNextDeliveryWorker();
+                    string employeetodeliver = db.getNextDeliveryWorker(deliverynum);
                     if (openConnection() == true)
                     {
                         string query = @"INSERT INTO " + dbname + @".delivery(deliveryid, planneddeliverydate, employeetodeliver) " +
@@ -149,7 +175,7 @@ namespace GroceryStore.Models
                 try
                 {
                     //search for all orders that belong to a user
-                    string query = @"SELECT orderid, orderdate, deliveryid, orderPrice FROM " + dbname + @".order WHERE username = '" + username + @"';";
+                    string query = @"SELECT DISTINCT orderid, orderdate, deliveryid, orderprice FROM " + dbname + @".order WHERE username = '" + username + @"';";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
                    
@@ -160,9 +186,9 @@ namespace GroceryStore.Models
                         while (dataReader.Read())
                         {
                             int orderid = dataReader.GetInt32(0);
-                            string orderDate = dataReader.GetString(5);
-                            int delID = dataReader.GetInt32(5);
-                            double price = dataReader.GetDouble(6);
+                            string orderDate = dataReader.GetString(1);
+                            int delID = dataReader.GetInt32(2);
+                            double price = dataReader.GetDouble(3);
                             Tuple<int, string, int, double> tuple = new Tuple<int, string, int, double>(orderid, orderDate, delID, price);
                             orderTuples.Add(tuple);
                         }
@@ -187,7 +213,7 @@ namespace GroceryStore.Models
                     }
                     if (!moreThanOneDelivery) //if orders belong to only one delivery, check if delivery has been delivered
                     {
-                        query = @"SELECT delivered(y/n) FROM " + dbname + @".delivery WHERE deliveryid = '" + firstDeliveryID + @"';";
+                        query = @"SELECT delivered FROM " + dbname + @".delivery WHERE deliveryid = '" + firstDeliveryID + @"';";
                         command = new MySqlCommand(query, connection);
                         MySqlDataReader reader = command.ExecuteReader();
                         String delivered = "";
@@ -197,7 +223,7 @@ namespace GroceryStore.Models
                             delivered = reader.GetString(0);
                             reader.Close();
                         }
-                        for(int i = 0; i < orderTuples.Count; i++) //add the delivered(y/n) field to the orderTuples previously collected
+                        for(int i = 0; i < orderTuples.Count; i++) //add the delivered field to the orderTuples previously collected
                         {
                             Tuple<int, string, double, string> order = new Tuple<int, string, double, string>(orderTuples[i].Item1, orderTuples[i].Item2, orderTuples[i].Item4, delivered);
                             orders.Add(order);
@@ -235,10 +261,10 @@ namespace GroceryStore.Models
             {
                 try
                 {
-                    //since not all orders were a part of the same delivery, must check for delivered(y/n) individually
+                    //since not all orders were a part of the same delivery, must check for delivered individually
                     for(int i = 0; i < orderTuples.Count; i++)
                     {
-                        string query = @"SELECT delivered(y/n) FROM " + dbname + @".delivery WHERE deliveryid = '" + orderTuples[i].Item3 + @"';";
+                        string query = @"SELECT delivered FROM " + dbname + @".delivery WHERE deliveryid = '" + orderTuples[i].Item3 + @"';";
                         MySqlCommand command = new MySqlCommand(query, connection);
                         MySqlDataReader reader = command.ExecuteReader();
                         String delivered = "";
@@ -299,6 +325,58 @@ namespace GroceryStore.Models
             new Table
                 (
                     dbname,
+                    "delivery",
+                    false,
+                    "",
+                    new Column[]
+                    {
+                        new Column
+                        (
+                            "deliveryid", "INT",
+                            new string[]
+                            {
+                                "NOT NULL",
+                                "UNIQUE"
+                            }, true
+                        ),
+                        new Column
+                        (
+                            "planneddeliverydate", "VARCHAR(20)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        ),
+                        new Column
+                        (
+                            "actualdeliverydate", "VARCHAR(20)",
+                            new string[]
+                            {
+                                "DEFAULT NULL"
+                            }, false
+                        ),
+                        new Column
+                        (
+                            "delivered", "VARCHAR(1)",
+                            new string[]
+                            {
+                                "NOT NULL",
+                                "DEFAULT 'n'"
+                            }, false
+                        ),
+                         new Column
+                        (
+                            "employeetodeliver", "VARCHAR(30)",
+                            new string[]
+                            {
+                                "NOT NULL"
+                            }, false
+                        )
+                    }
+                ),
+            new Table
+                (
+                    dbname,
                     "order",
                     true,
                     "FOREIGN KEY (username) REFERENCES userdb.user(username) ON UPDATE CASCADE ON DELETE CASCADE, FOREIGN KEY (deliveryid) REFERENCES orderdb.delivery(deliveryid)",
@@ -306,11 +384,20 @@ namespace GroceryStore.Models
                     {
                         new Column
                         (
+                            "id", "INT",
+                            new string[]
+                            {   
+                                "AUTO_INCREMENT",
+                                "NOT NULL"
+                            }, true
+                        ),
+                        new Column
+                        (
                             "orderid", "INT",
                             new string[]
                             {
                                 "NOT NULL"
-                            }, true
+                            }, false
                         ),
                          new Column
                         (
@@ -318,7 +405,7 @@ namespace GroceryStore.Models
                             new string[]
                             {
                                 "NOT NULL"
-                            }, true
+                            }, false
                         ),
                           new Column
                         (
@@ -330,7 +417,7 @@ namespace GroceryStore.Models
                         ),
                         new Column
                         (
-                            "username", "VARCHAR(30)",
+                            "username", "VARCHAR(50)",
                             new string[]
                             {
                                 "NOT NULL"
@@ -354,59 +441,7 @@ namespace GroceryStore.Models
                         ),
                           new Column
                         (
-                            "orderPrice", "DECIMAL(5, 2)",
-                            new string[]
-                            {
-                                "NOT NULL"
-                            }, false
-                        )
-                    }
-                ),
-            new Table
-                (
-                    dbname,
-                    "delivery",
-                    true,
-                    "FOREIGN KEY (username) REFERENCES userdb.user(username) ON UPDATE CASCADE ON DELETE CASCADE",
-                    new Column[]
-                    {
-                        new Column
-                        (
-                            "deliveryid", "INT",
-                            new string[]
-                            {
-                                "NOT NULL",
-                                "UNIQUE",
-                            }, true
-                        ),
-                        new Column
-                        (
-                            "planneddeliverydate", "VARCHAR(20)",
-                            new string[]
-                            {
-                                "NOT NULL"
-                            }, false
-                        ),
-                        new Column
-                        (
-                            "actualdeliverydate", "VARCHAR(20)",
-                            new string[]
-                            {
-                                "DEFAULT NULL"
-                            }, false
-                        ),
-                        new Column
-                        (
-                            "delivered(y/n)", "VARCHAR(1)",
-                            new string[]
-                            {
-                                "NOT NULL",
-                                "DEFAULT 'n'"
-                            }, false
-                        ),
-                         new Column
-                        (
-                            "employeetodeliver", "VARCHAR(30)",
+                            "orderprice", "DECIMAL(5, 2)",
                             new string[]
                             {
                                 "NOT NULL"

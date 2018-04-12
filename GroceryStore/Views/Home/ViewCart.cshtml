@@ -32,34 +32,34 @@
                 <br />
                 <br />
             }
+
+            <br /><br />
+            <div style="text-align:right; padding-right:200px;">
+                @using (Html.BeginForm("SubmitOrder", "Home", FormMethod.Post))
+                {
+                    <p>
+                        (Free Delivery For Orders Over $30!)<br />
+                        Cart SubTotal: @ViewBag.carttotal.ToString("C")
+                    </p>
+                    if (ViewBag.carttotal > 30)
+                    {
+                        <p>Delivery Fee: $0.00<br />Tax(5%): @((ViewBag.carttotal * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal + (ViewBag.carttotal * 0.05)).ToString("C"))</p>
+                        <input type="hidden" value="@(ViewBag.carttotal + (ViewBag.carttotal * 0.05))" name="finalcartprice" />
+                    }
+                    else
+                    {
+                        <p>Delivery Fee: $5.00<br />Tax(5%): @(((ViewBag.carttotal + 5) * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal + 5 + ((ViewBag.carttotal + 5) * 0.05)).ToString("C"))</p>
+                        <input type="hidden" value="@(ViewBag.carttotal+5+((ViewBag.carttotal+5) * 0.05))" name="finalcartprice" />
+                    }
+                    <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 150px;height: 40px;" value="Submit Order" />
+                }
+            </div>
         }
         else
         {
             <p>You currently have nothing in your cart.</p>
         }
     </div>
-    <br /><br />
-    <div style="text-align:right; padding-right:200px;">
-        @using (Html.BeginForm("SubmitOrder", "Home", FormMethod.Post))
-        {
-            <p>
-                (Free Delivery For Orders Over $30!)<br />
-                Cart SubTotal: @ViewBag.carttotal.ToString("C")
-            </p>
-            if (ViewBag.carttotal > 30)
-            {
-                <p>Delivery Fee: $0.00<br />Tax(5%): @((ViewBag.carttotal * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal+(ViewBag.carttotal*0.05)).ToString("C"))</p>
-                <input type="hidden" value="@(ViewBag.carttotal + (ViewBag.carttotal * 0.05))" name="finalcartprice" />
-            }
-            else
-            {
-                <p>Delivery Fee: $5.00<br />Tax(5%): @(((ViewBag.carttotal + 5) * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal+5+((ViewBag.carttotal+5)*0.05)).ToString("C"))</p>
-                <input type="hidden" value="@(ViewBag.carttotal+5+((ViewBag.carttotal+5) * 0.05))" name="finalcartprice" />
-            }
-            <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 150px;height: 40px;" value="Submit Order" />
-        }
-    </div>
-    <br /> <br />
 </div>
 
 

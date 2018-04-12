@@ -9,24 +9,27 @@
     </h1>
     <br /> <br />
     <div style="text-align:left; padding-left:300px;">
-        @if (ViewBag.EmptyCart == false)
+        @if (ViewBag.foundorders == true)
         {
-            foreach (Tuple<int, string, int, double> item in ViewBag.cartlist)
+            foreach (Tuple<int, string, double, string> item in ViewBag.orderlist)
             {
-                <div style="width:300px;display: inline-block;">
-                    <p>@item.Item2 (Item SKU:@item.Item1)</p>
+                <div style="width:150px;display: inline-block;">
+                    <p>Order ID: @item.Item1</p>
+                </div>
+                <div style="width:220px;display: inline-block;">
+                    <p>Order Date: @item.Item2</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
-                    <p>Quantity: @item.Item3 in cart</p>
+                    <p>Order Price: @item.Item3.ToString("C")</p>
                 </div>
                 <div style="width:200px;display: inline-block;">
-                    <p>Price: @item.Item4.ToString("C")  (@((item.Item4 / item.Item3).ToString("C")) each)</p>
-                </div>
-                <div style="width:200px;display: inline-block;">
-                    @using (Html.BeginForm("deleteFromCart", "Home", FormMethod.Post))
+                    @if(item.Item4 == "y")
                     {
-                        <input type="hidden" value="@item.Item1" name="sku" />
-                        <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 220px;" value="Remove Item From Cart" />
+                        <p>Order Delivered?: Yes</p>
+                    }
+                    else
+                    {
+                         <p>Order Delivered?: No</p>
                     }
                 </div>
                 <br />
@@ -35,31 +38,10 @@
         }
         else
         {
-            <p>You currently have nothing in your cart.</p>
+            <p>According to our records, you have never ordered from Fresh Direct. :( </p>
         }
     </div>
     <br /><br />
-    <div style="text-align:right; padding-right:200px;">
-        @using (Html.BeginForm("SubmitOrder", "Home", FormMethod.Post))
-        {
-            <p>
-                (Free Delivery For Orders Over $30!)<br />
-                Cart SubTotal: @ViewBag.carttotal.ToString("C")
-            </p>
-            if (ViewBag.carttotal > 30)
-            {
-                <p>Delivery Fee: $0.00<br />Tax(5%): @((ViewBag.carttotal * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal + (ViewBag.carttotal * 0.05)).ToString("C"))</p>
-                <input type="hidden" value="@(ViewBag.carttotal + (ViewBag.carttotal * 0.05))" name="finalcartprice" />
-            }
-            else
-            {
-                <p>Delivery Fee: $5.00<br />Tax(5%): @(((ViewBag.carttotal + 5) * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal + 5 + ((ViewBag.carttotal + 5) * 0.05)).ToString("C"))</p>
-                <input type="hidden" value="@(ViewBag.carttotal+5+((ViewBag.carttotal+5) * 0.05))" name="finalcartprice" />
-            }
-            <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 150px;height: 40px;" value="Submit Order" />
-        }
-    </div>
-    <br /> <br />
 </div>
 
 

@@ -240,8 +240,17 @@ namespace GroceryStore.Controllers
         public ActionResult ViewOrders()
         {
             OrderDatabase db = OrderDatabase.getInstance();
-            // <orderid, orderdate, deliveredboolean
-            List<Tuple<int, string, string>> orderInfo = db.getOrders(Globals.getUser());
+            // <orderid, orderdate, orderprice, deliveredboolean
+            List<Tuple<int, string, double, string>> orderInfo = db.getOrders(Globals.getUser());
+            if(orderInfo.Count > 0)
+            {
+                ViewBag.foundorders = true;
+                ViewBag.orderlist = orderInfo;
+            }
+            else
+            {
+                ViewBag.foundorders = false;
+            }
             return View();
         }
 
