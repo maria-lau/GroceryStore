@@ -73,7 +73,7 @@ namespace GroceryStore.Models
                     {
                         // not the first insert
                         dataReader.Read();
-                        int currentid = dataReader.GetInt32(0);
+                        int currentid = dataReader.GetInt32(1);
                         newordernum = dataReader.GetInt32(1) + 1;
                         newdeliverynum = dataReader.GetInt32(6);
                         dataReader.Close();
@@ -153,7 +153,15 @@ namespace GroceryStore.Models
                         {
                             int deliveryid = dataReader.GetInt32(0);
                             string plannedDate = dataReader.GetString(1);
-                            string actualDate = dataReader.GetString(2);
+                            string actualDate;
+                            if (dataReader.IsDBNull(2))
+                            {
+                                actualDate = "N/A";
+                            }
+                            else
+                            {
+                                actualDate = dataReader.GetString(2);
+                            }
                             string delivered = dataReader.GetString(3);
                             string employee = dataReader.GetString(4);
 
@@ -167,8 +175,6 @@ namespace GroceryStore.Models
                     else
                     {
                         dataReader.Close();
-                        closeConnection();
-                        return userDeliveries;
                     }
 
                 }
@@ -200,8 +206,8 @@ namespace GroceryStore.Models
             {
                 try
                 {
-                    //set delivered field to yes where the username and deliveryid match the parameters
-                    string query = "UPDATE " + dbname + ".delivery SET delivered='y', actualdeliverydate=" + DateTime.Today.ToString("d") + " WHERE employeetodeliver='" + username + "' AND deliveryid=" + deliveryid + ";";
+                    //set delivered field to yes where the username and deliveryid match the parameters and set delivery date
+                    string query = "UPDATE " + dbname + ".delivery SET delivered='y', actualdeliverydate=" + DateTime.Today.Date.ToString("d") + " WHERE employeetodeliver='" + username + "' AND deliveryid=" + deliveryid + ";";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.ExecuteNonQuery();
                     result = true;
@@ -242,8 +248,7 @@ namespace GroceryStore.Models
                 {
                     //SELECT username, orderid, orderdate, orderprice, orderdb.order.deliveryid, employeetodeliver, delivered
                     // FROM orderdb.`order`, orderdb.delivery WHERE orderdb.`order`.deliveryid = orderdb.delivery.deliveryid;
-                    string query = "SELECT username, orderid, orderdate, orderprice, orderdb.order.deliveryid, employeetodeliver, delivered " +
-                        "FROM " + dbname + ".order, " + dbname + ".delivery WHERE " + dbname + ".order.deliveryid = " + dbname + ".delivery.deliveryid;";
+                    string query = "SELECT DISTINCT username, orderid, orderdate, orderprice, orderdb.order.deliveryid, employeetodeliver, delivered FROM orderdb.order, orderdb.delivery WHERE orderdb.order.deliveryid = orderdb.delivery.deliveryid;";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
 

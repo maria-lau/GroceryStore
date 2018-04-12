@@ -343,11 +343,43 @@ namespace GroceryStore.Controllers
             return View();
         }
 
-        public ActionResult ViewMyDeliveries()
+        public ActionResult ViewMyDeliveries(int itemoperation = 0, string message = "")
+        {
+            if (itemoperation == 1)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+            else if (itemoperation == 2)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+
+            OrderDatabase db = OrderDatabase.getInstance();
+            List<Tuple<int, string, string, string, string>> deliveries = db.viewDeliveries(Globals.getUser());
+            if(deliveries.Count > 0)
+            {
+                ViewBag.founddeliveries = true;
+                ViewBag.deliverylist = deliveries;
+            }
+            else
+            {
+                ViewBag.founddeliveries = false;
+            }
+            return View();
+        }
+
+        public ActionResult confirmDelivery(int deliveryid)
         {
             OrderDatabase db = OrderDatabase.getInstance();
-
-            return View();
+            Response confirmdeliveryresponse = db.confirmDelivery(Globals.getUser(), deliveryid);
+            if (confirmdeliveryresponse.result)
+            {
+                return RedirectToAction("ViewMyDeliveries", new { itemoperation = 1, message = confirmdeliveryresponse.response });
+            }
+            else
+            {
+                return RedirectToAction("ViewMyDeliveries", new { itemoperation = 2, message = confirmdeliveryresponse.response });
+            }
         }
 
         public ActionResult addToCart(int quantity, int sku, double price)

@@ -233,6 +233,7 @@
     <Content Include="Views\Home\Shop.cshtml" />
     <Content Include="Views\Home\AddGroceryItem.cshtml" />
     <Content Include="Views\Home\ViewAllOrders.cshtml" />
+    <Content Include="Views\Home\ViewMyDeliveries.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
