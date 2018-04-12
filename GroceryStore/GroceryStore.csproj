@@ -225,7 +225,7 @@
     <Content Include="Views\Home\CreateAccount.cshtml" />
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Home\CreateEmployeeAccount.cshtml" />
-    <Content Include="Views\Home\ViewEmployees.cshtml" />
+    <Content Include="Views\Home\ViewAllUsers.cshtml" />
     <Content Include="Views\Home\CreateManagerAccount.cshtml" />
     <Content Include="Views\Home\CreateStore.cshtml" />
     <Content Include="Views\Home\ViewCart.cshtml" />

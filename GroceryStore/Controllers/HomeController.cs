@@ -160,7 +160,7 @@ namespace GroceryStore.Controllers
             if (createemployeeaccountresponse.result)
             {
                 Response.Write("<script>alert('" + createemployeeaccountresponse.response + "')</script>");
-                return View("ViewEmployees");
+                return View("ViewAllUsers");
             }
             else
             {
@@ -198,7 +198,7 @@ namespace GroceryStore.Controllers
             if (createmanageraccountresponse.result)
             {
                 Response.Write("<script>alert('" + createmanageraccountresponse.response + "')</script>");
-                return View("ViewEmployees");
+                return View("ViewAllUsers");
             }
             else
             {
@@ -227,8 +227,80 @@ namespace GroceryStore.Controllers
             return View();
         }
 
-        public ActionResult ViewEmployees()
+        public ActionResult ViewAllUsers()
         {
+            UserDatabase db = UserDatabase.getInstance();
+
+            // get customers
+            List<UserAccount> tempcustomers = db.getAllCustomers();
+            if(tempcustomers.Count > 0)
+            {
+                List<string> customers = new List<string>();
+                for(int i = 0; i < tempcustomers.Count(); i++)
+                {
+                    string temp = "<td>Username: " + tempcustomers[i].username + "</td><td>First Name: " + tempcustomers[i].fname + "</td><td>Last Name: " +
+                        tempcustomers[i].lname + "</td><td>Address: " + tempcustomers[i].street + "</td><td>" +
+                        tempcustomers[i].city + "</td><td>" + tempcustomers[i].province + "</td><td>" +
+                        tempcustomers[i].postalcode + "</td><td>Contact: " + tempcustomers[i].email + "</td><td>" +
+                        tempcustomers[i].phone + "</td>";
+                    customers.Add(temp);
+                }
+                ViewBag.foundcustomers = true;
+                ViewBag.customerlist = customers;
+            }
+            else
+            {
+                ViewBag.foundcustomers = false;
+            }
+
+            // get employees
+            List<EmployeeAccount> tempemployees = db.getAllEmployees();
+            if (tempemployees.Count > 0)
+            {
+                List<string> employees = new List<string>();
+                for (int i = 0; i < tempemployees.Count(); i++)
+                {
+                    string temp = "<td>Username: " + tempemployees[i].username + "</td><td>First Name: " + tempemployees[i].fname + "</td><td>Last Name: " +
+                        tempemployees[i].lname + "</td><td>Address: " + tempemployees[i].street + "</td><td>" +
+                        tempemployees[i].city + "</td><td>" + tempemployees[i].province + "</td><td>" +
+                        tempemployees[i].postalcode + "</td><td>Contact: " + tempemployees[i].email + "</td><td>" +
+                        tempemployees[i].phone + "</td><td>SIN: " + tempemployees[i].sin + "</td><td>Start Date: " +
+                        tempemployees[i].startdate + "</td><td>Wage: " + tempemployees[i].hourlywage.ToString("C") + "/hour</td>";
+
+                        employees.Add(temp);
+                }
+                ViewBag.foundemployees = true;
+                ViewBag.employeelist = employees;
+            }
+            else
+            {
+                ViewBag.foundemployees = false;
+            }
+
+            // get managers
+            List<ManagerAccount> tempmanagers = db.getAllManagers();
+            if (tempmanagers.Count > 0)
+            {
+                List<string> managers = new List<string>();
+                for (int i = 0; i < tempmanagers.Count(); i++)
+                {
+                    string temp = "<td>Username: " + tempmanagers[i].username + "</td><td>First Name: " + tempmanagers[i].fname + "</td><td>Last Name: " +
+                        tempmanagers[i].lname + "</td><td>Address: " + tempmanagers[i].street + "</td><td>" +
+                        tempmanagers[i].city + "</td><td>" + tempmanagers[i].province + "</td><td>" +
+                        tempmanagers[i].postalcode + "</td><td>Contact: " + tempmanagers[i].email + "</td><td>" +
+                        tempmanagers[i].phone + "</td><td>SIN: " + tempmanagers[i].sin + "</td><td>Start Date: " +
+                        tempmanagers[i].startdate + "</td><td>Wage: " + tempmanagers[i].hourlywage.ToString("C") + "/hour</td><td>Store ID: " + 
+                        tempmanagers[i].storeid + "</td>";
+
+                    managers.Add(temp);
+                }
+                ViewBag.foundmanagers = true;
+                ViewBag.managerlist = managers;
+            }
+            else
+            {
+                ViewBag.foundmanagers = false;
+            }
             return View();
         }
 
@@ -351,6 +423,7 @@ namespace GroceryStore.Controllers
                 Response submitorderresponse = orderdb.placeOrder(Globals.getUser(), neworder);
                 if (submitorderresponse.result)
                 {
+                    // add code to clear cart 
                     return RedirectToAction("ViewCart", new { itemoperation = 1, message = submitorderresponse.response });
                 }
                 else

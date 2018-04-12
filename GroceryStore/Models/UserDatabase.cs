@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 
 namespace GroceryStore.Models
 {
@@ -293,6 +294,181 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
+        public List<UserAccount> getAllCustomers()
+        {
+            List<UserAccount> customers = new List<UserAccount>();
+            if (openConnection())
+            {
+                try
+                {
+                    string query = "SELECT * FROM userdb.user WHERE type = 'customer';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            UserAccount temp = new UserAccount();
+                            temp.username = dataReader.GetString(0);
+                            temp.fname = dataReader.GetString(2);
+                            temp.lname = dataReader.GetString(3);
+                            temp.street = dataReader.GetString(4);
+                            temp.city = dataReader.GetString(5);
+                            temp.province = dataReader.GetString(6);
+                            temp.postalcode = dataReader.GetString(7);
+                            temp.email = dataReader.GetString(8);
+                            temp.phone = dataReader.GetString(9);
+
+                            customers.Add(temp);
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to get all customers from database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to get all customers from database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                Debug.consoleMsg("Unable to connect to database");
+            }
+            return customers;
+        }
+
+        public List<EmployeeAccount> getAllEmployees()
+        {
+            List<EmployeeAccount> employees = new List<EmployeeAccount>();
+            if (openConnection())
+            {
+                try
+                {
+                    string query = "SELECT * FROM userdb.user NATURAL JOIN userdb.employee WHERE type='employee';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            EmployeeAccount temp = new EmployeeAccount();
+                            temp.username = dataReader.GetString(0);
+                            temp.fname = dataReader.GetString(2);
+                            temp.lname = dataReader.GetString(3);
+                            temp.street = dataReader.GetString(4);
+                            temp.city = dataReader.GetString(5);
+                            temp.province = dataReader.GetString(6);
+                            temp.postalcode = dataReader.GetString(7);
+                            temp.email = dataReader.GetString(8);
+                            temp.phone = dataReader.GetString(9);
+                            temp.sin = dataReader.GetInt32(11);
+                            temp.startdate = dataReader.GetString(12);
+                            temp.hourlywage = dataReader.GetFloat(13);
+
+                            employees.Add(temp);
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to get all employees from database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to get all employees from database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                Debug.consoleMsg("Unable to connect to database");
+            }
+            return employees;
+        }
+
+        public List<ManagerAccount> getAllManagers()
+        {
+            List<ManagerAccount> managers = new List<ManagerAccount>();
+            if (openConnection())
+            {
+                try
+                {
+                    string query = "SELECT * FROM userdb.user NATURAL JOIN userdb.employee NATURAL JOIN userdb.manager WHERE type='manager';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            ManagerAccount temp = new ManagerAccount();
+                            temp.username = dataReader.GetString(0);
+                            temp.fname = dataReader.GetString(2);
+                            temp.lname = dataReader.GetString(3);
+                            temp.street = dataReader.GetString(4);
+                            temp.city = dataReader.GetString(5);
+                            temp.province = dataReader.GetString(6);
+                            temp.postalcode = dataReader.GetString(7);
+                            temp.email = dataReader.GetString(8);
+                            temp.phone = dataReader.GetString(9);
+                            temp.sin = dataReader.GetInt32(11);
+                            temp.startdate = dataReader.GetString(12);
+                            temp.hourlywage = dataReader.GetFloat(13);
+                            temp.storeid = dataReader.GetInt32(14);
+
+                            managers.Add(temp);
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to get all employees from database." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to get all employees from database." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                Debug.consoleMsg("Unable to connect to database");
+            }
+            return managers;
+        }
+
 
         public Response getUserType(string username)
         {
@@ -350,14 +526,14 @@ namespace GroceryStore.Models
                     MySqlCommand command = new MySqlCommand(query, connection);
                     int employeenum = Convert.ToInt32(command.ExecuteScalar());
 
-                    int whosturnindex = nextdeliveryID%employeenum;
+                    int whosturnindex = nextdeliveryID % employeenum;
                     query = @"SELECT username FROM " + databaseName + @".user " + @"WHERE type='employee';";
                     command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
                     // if tuples are returned
                     if (dataReader.HasRows)
                     {
-                        for(int i = 0; i <= whosturnindex; i++)
+                        for (int i = 0; i <= whosturnindex; i++)
                         {
                             dataReader.Read();
                         }
