@@ -408,7 +408,39 @@ namespace GroceryStore.Models
             }
             return employees;
         }
-
+        public Response deleteUserAccount(string username)
+        {
+            bool result = false;
+            string message = "";
+            if(openConnection() == true)
+            {
+                try
+                {
+                    string query = "DELETE FROM " + dbname + ".user WHERE username='" + username + "';";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.ExecuteNonQuery();
+                    result = true;
+                    message = "User account deleted successfully.";
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to delete " + username + " from database." +
+                        " Error :" + e.Number + e.Message);
+                    message = "Unable to delete " + username + " from database.";
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to get all employees from database." +
+                        " Error:" + e.Message);
+                    message = "Unable to delete " + username + " from database.";
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            return new Response(result, message);
+        }
         public List<ManagerAccount> getAllManagers()
         {
             List<ManagerAccount> managers = new List<ManagerAccount>();
