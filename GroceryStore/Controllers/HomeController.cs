@@ -631,7 +631,6 @@ namespace GroceryStore.Controllers
             {
                 ViewBag.foundrecipes = false;
             }
-
             return View();
         }
 
@@ -670,7 +669,7 @@ namespace GroceryStore.Controllers
             string[] items = recipeitems.Split(',');
             for(int i=0; i < items.Length; i++)
             {
-                string[] temp = items[i].Split(null);
+                string[] temp = items[i].Trim().Split(null);
                 newrecipe.ingredients.Add(Tuple.Create(Convert.ToInt32(temp[0]), Convert.ToInt32(temp[1])));
             }
             GroceryDatabase db = GroceryDatabase.getInstance();
@@ -681,22 +680,23 @@ namespace GroceryStore.Controllers
             }
             else
             {
-                return RedirectToAction("AddRecipes", new { itemoperation = 1, message = addreciperesponse.response });
+                return RedirectToAction("AddRecipe", new { itemoperation = 2, message = addreciperesponse.response });
             }
         }
 
         public ActionResult addRecipeToCart(int recipeid)
         {
             GroceryDatabase db = GroceryDatabase.getInstance();
-            Response addreciperesponse = db.addRecipeToCart(Globals.getUser(), recipeid);
-            if (addreciperesponse.result)
-            {
-                return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
-            }
-            else
-            {
-                return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
-            }
+            //Response addreciperesponse = db.addRecipeToCart(Globals.getUser(), recipeid);
+            //if (addreciperesponse.result)
+            //{
+            //    return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
+            //}
+            //else
+            //{
+            //    return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
+            //}
+            return View();
         }
     }
 }

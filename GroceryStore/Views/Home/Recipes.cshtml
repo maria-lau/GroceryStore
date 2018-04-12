@@ -13,17 +13,17 @@
             foreach (Tuple<int, string, int> recipe in ViewBag.recipelist)
             {
                 <p>Recipe ID: @recipe.Item1</p><br />
-                <div style="width:500px;display: inline-block;">
+                <div style="width:500px;display: inline-block;vertical-align:middle;">
                     <p>@recipe.Item2</p>
                 </div>
-                <div style="width:220px;display: inline-block;">
+                <div style="width:300px;display: inline-block;vertical-align:top;">
                     <p>Total Cook Time (minutes): @recipe.Item3</p>
                 </div>
-                <div style="width:250px;display: inline-block;">
+                <div style="width:250px;display: inline-block;vertical-align:top;">
                     @using (Html.BeginForm("addRecipeToCart", "Home", FormMethod.Post))
                     {
                         <input type="hidden" value="@recipe.Item1" name="recipeid" />
-                        <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 120px;" value="Add Recipe Items to Cart" />
+                        <input type="submit" style="float: none; background-color: #1185f9;color: white; vertical-align:top;padding: 10px 15px;border: none; cursor: pointer; width: 220px;" value="Add Recipe Items to Cart" />
                     }
                 </div>
                 <br />
@@ -35,22 +35,15 @@
             <p>There are curretly no recipes in the system :( .</p>
         }
     </div>
-    <br /> <br />
+    <br />
     <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
         @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
         {
-            <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 320px;height: 40px;" href="/Home/AddGroceryItem">Add New Grocery Item</a>
-            <br /> <br /><br /><br />
-            using (Html.BeginForm("DeleteGroceryItem", "Home", FormMethod.Post))
-            {
-                @Html.TextBox("sku", null, new { @placeholder = "Enter SKU of Item to be Deleted", required = "required", style = "width:320px;" })<br />
-                <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 320px;height: 40px;" value="Delete Item" />
-            }
+            <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" href="/Home/AddRecipe">Add New Recipe</a>
+            <br />
         }
     </div>
 </div>
-
-
 <style>
 
     form {
