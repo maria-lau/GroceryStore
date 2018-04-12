@@ -291,12 +291,12 @@ namespace GroceryStore.Models
                 }
                 catch (MySqlException e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to retrieve cart." +
                         " Error :" + e.Number + e.Message);
                 }
                 catch (Exception e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to retrieve cart." +
                         " Error:" + e.Message);
                 }
                 finally
@@ -306,6 +306,51 @@ namespace GroceryStore.Models
             }
 
             return cartresult;
+        }
+
+        //Deletes all tuples from the cart table that belong to the user identified with the parameter username
+        //Called when a user places an order
+        public Response clearCart(string username)
+        {
+            bool result = false;
+            string message = "";
+
+            
+            if (openConnection() == true)
+            {
+                try
+                {
+                    //delete all items from the cart table that belong to a specific user
+                    string query = @"DELETE FROM " + dbname + @".cart WHERE username='" + username + @"';";
+
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.ExecuteNonQuery();
+                    result = true;
+                    message = "Your cart is now empty";
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to clear cart." +
+                        " Error :" + e.Number + e.Message);
+                    message = "Mysql exception thrown trying to clear cart";
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to clear cart." +
+                        " Error:" + e.Message);
+                    message = "Exception thrown trying to clear cart";
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                message = "Unable to connect to database while attempting to clear cart.";
+            }
+            return new Response(result, message);
+
         }
 
         public Response deleteItemFromCart(string username, int sku)
@@ -324,12 +369,12 @@ namespace GroceryStore.Models
                 }
                 catch (MySqlException e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to delete item from cart." +
                         " Error :" + e.Number + e.Message);
                 }
                 catch (Exception e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to delete item from cart." +
                         " Error:" + e.Message);
                 }
                 finally
@@ -371,12 +416,12 @@ namespace GroceryStore.Models
                 }
                 catch (MySqlException e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to retrieve item name." +
                         " Error :" + e.Number + e.Message);
                 }
                 catch (Exception e)
                 {
-                    Debug.consoleMsg("Unable to complete add cart item into database." +
+                    Debug.consoleMsg("Unable to retrieve item name." +
                         " Error:" + e.Message);
                 }
                 finally

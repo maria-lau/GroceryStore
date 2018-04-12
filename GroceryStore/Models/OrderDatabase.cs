@@ -53,9 +53,15 @@ namespace GroceryStore.Models
                         {
                             for (int i = 0; i < order.ordercontents.Count; i++)
                             {
+                                //insert the contents of the cart into the order table
                                 query = @"INSERT INTO " + dbname + @".order(orderid, sku, quantity, username, orderdate, deliveryid, orderprice)" +
                                 @"VALUES(" + newordernum + @", " + order.ordercontents[i].Item1 + @", " + order.ordercontents[i].Item2 + @", '" +
                                     username + @"','" + order.orderdate.Date.ToString("d") + @"', " + newdeliverynum + @", " + Math.Round(order.orderprice,2) + @");";
+                                command = new MySqlCommand(query, connection);
+                                command.ExecuteNonQuery();
+
+                                //update the quantity of the grocery items that were sold
+                                query = "UPDATE grocerydb.groceryitem SET quantity= quantity-" + order.ordercontents[i].Item2 + " WHERE sku=" + order.ordercontents[i].Item1 + ";";
                                 command = new MySqlCommand(query, connection);
                                 command.ExecuteNonQuery();
                             }
@@ -83,6 +89,11 @@ namespace GroceryStore.Models
                                 query = @"INSERT INTO " + dbname + @".order(orderid, sku, quantity, username, orderdate, deliveryid, orderprice)" +
                                     @"VALUES(" + newordernum + @", " + order.ordercontents[i].Item1 + @", " + order.ordercontents[i].Item2 + @", '" +
                                     username + @"','" + order.orderdate.Date.ToString("d") + @"', " + newdeliverynum + @", " + Math.Round(order.orderprice, 2) + @");";
+                                command = new MySqlCommand(query, connection);
+                                command.ExecuteNonQuery();
+
+                                //Update the quantity of the grocery items that were sold
+                                query = "UPDATE grocerydb.groceryitem SET quantity= quantity-" + order.ordercontents[i].Item2 + " WHERE sku=" + order.ordercontents[i].Item1 + ";";
                                 command = new MySqlCommand(query, connection);
                                 command.ExecuteNonQuery();
                             }
@@ -115,6 +126,114 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
+        //public List<Tuple<int, string, string, string, string>> viewDeliveries(string username)
+        //{
+        //    List<Tuple<int, string, string, string, string>> userDeliveries = new List<Tuple<int, string, string, string, string>>();
+
+
+        //    return userDeliveries;
+        //}
+
+        //Let employee confirm their devliery
+        public Response confirmDelivery(string username, int deliveryid)
+        {
+            bool result = false;
+            string message = "";
+            if (openConnection() == true)
+            {
+
+                try
+                {
+                    //set delivered field to yes where the username and deliveryid match the parameters
+                    string query = "UPDATE " + dbname + ".delivery SET delivered='y', actualdeliverydate=" + DateTime.Today.ToString("d") + "WHERE username='" + username + "' AND deliveryid=" + deliveryid + ";";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    command.ExecuteNonQuery();
+                    result = true;
+                    message = "Delivery: " + deliveryid + " confirmed";
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to confirm " + username + "'s delivery." + 
+                        " Error :" + e.Number + e.Message);
+                    message = e.Message;
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to confirm " + username + "'s delivery." +
+                        " Error:" + e.Message);
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            else
+            {
+                message = "Unable to connect to database";
+            }
+            return new Response(result, message);
+        }
+        
+        //Get all the orders currently in the database and return relevant information for the manager to see
+        public List<Tuple<string, int, string, double, int, string, string>> getAllOrders()
+        {
+            //username, orderid, orderDate, orderprice, deliveryid, assignedworker, delivered(y/n)
+            List<Tuple<string, int, string, double, int, string, string>> allOrders = new List<Tuple<string, int, string, double, int, string, string>>();
+            if (openConnection() == true)
+            {
+                try
+                {
+                    //SELECT username, orderid, orderdate, orderprice, orderdb.order.deliveryid, employeetodeliver, delivered
+                    // FROM orderdb.`order`, orderdb.delivery WHERE orderdb.`order`.deliveryid = orderdb.delivery.deliveryid;
+                    string query = "SELECT username, orderid, orderdate, orderprice, orderdb.order.deliveryid, employeetodeliver, delivered " +
+                        "FROM " + dbname + ".order, " + dbname + ".delivery WHERE" + dbname + ".order.deliveryid = " + dbname + ".delivery.deliveryid;";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            //get the correct attributes from the tuple being read, create tuple object, add to list AllOrders to be returned
+                            string username = dataReader.GetString(0);
+                            int orderid = dataReader.GetInt32(1);
+                            string orderdate = dataReader.GetString(2);
+                            double orderprice = dataReader.GetDouble(3);
+                            int deliveryid = dataReader.GetInt32(4);
+                            string empToDeliver = dataReader.GetString(5);
+                            string delivered = dataReader.GetString(6);
+                            Tuple<string, int, string, double, int, string, string> order = new Tuple<string, int, string, double, int, string, string>(
+                                username, orderid, orderdate, orderprice, deliveryid, empToDeliver, delivered);
+                            allOrders.Add(order);
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                        closeConnection();
+                        return allOrders;
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to retrieve all orders." +
+                        " Error :" + e.Number + e.Message);                    
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to retrieve all orders." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+
+            return allOrders;
+        }
         public Response addDelivery(int deliverynum, DateTime planneddeliverydate)
         {
             bool result = false;
@@ -166,6 +285,7 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
+        //Get all orders pertaining to a specific user
         public List<Tuple<int, string, double, string>> getOrders(string username)
         {
             // <orderid, orderdate, orderprice, delivered?
@@ -238,12 +358,12 @@ namespace GroceryStore.Models
                 }
                 catch (MySqlException e)
                 {
-                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                    Debug.consoleMsg("Unable to retrieve " + username +"'s orders." +
                         " Error :" + e.Number + e.Message);
                 }
                 catch (Exception e)
                 {
-                    Debug.consoleMsg("Unable to complete add delivery into database." +
+                    Debug.consoleMsg("Unable to retrieve " + username + "'s orders." +
                         " Error:" + e.Message);
                 }
                 finally
