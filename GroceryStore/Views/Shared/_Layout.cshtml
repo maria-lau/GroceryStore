@@ -25,7 +25,7 @@
                     <li>@Html.ActionLink("Stores", "ViewStores", "Home")</li>
                     @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
                     {
-                        <li>@Html.ActionLink("View Employees", "ViewEmployees", "Home")</li>
+                        <li>@Html.ActionLink("View All Users", "ViewAllUsers", "Home")</li>
                     }
                     @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
                     {
