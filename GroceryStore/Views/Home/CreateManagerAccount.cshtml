@@ -1,11 +1,10 @@
 ﻿
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
-<div class="w3-container w3-display-middle">
-    <h1 class="w3-animate-left" style="padding-top:150px;">
+<div class="w3-container w3-display-middle"style="margin-top:150px;">
+    <h1 class="w3-animate-left">
         <a style=color:#785ff4>Create </a><a style=color:#1185f9>Manager </a><a style=color:#3ae2fc>Account</a>
     </h1>
-    <p id="hi"></p>
     @using (Html.BeginForm("CreateManagerAccountPost", "Home", FormMethod.Post))
     {
     <div class="container" style="text-align:center;">
@@ -53,10 +52,10 @@
         @Html.TextBox("storeid", null, new { @placeholder = "Enter Manager's Store ID", required = "required" })<br />
 
         <br />
-    </div>
         <div style="text-align:center;">
             <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 250px;" value="Create Manager Account" />
         </div>
+    </div>
     }
 </div>
 

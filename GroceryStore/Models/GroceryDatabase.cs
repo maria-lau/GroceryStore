@@ -141,7 +141,7 @@ namespace GroceryStore.Models
         {
             bool result = false;
             string message = "";
-            if(openConnection() == true)
+            if (openConnection() == true)
             {
                 try
                 {
@@ -196,7 +196,7 @@ namespace GroceryStore.Models
             bool result = false;
             string message = "";
 
-            if(openConnection() == true)
+            if (openConnection() == true)
             {
                 try
                 {
@@ -215,7 +215,7 @@ namespace GroceryStore.Models
                         //check if SKU's of ingredients exist
                         bool AllSkuExist = true;
                         List<int> notFoundItems = new List<int>();
-                        for(int i = 0; i < recipe.ingredients.Count; i++)
+                        for (int i = 0; i < recipe.ingredients.Count; i++)
                         {
                             query = "SELECT * FROM " + dbname + ".groceryitem WHERE sku=" + recipe.ingredients[i].Item1 + ";";
                             command = new MySqlCommand(query, connection);
@@ -245,7 +245,7 @@ namespace GroceryStore.Models
                             command.ExecuteNonQuery();
 
                             //enter SKU and quantity pairs into recipecontainsgroceryitem with the recipe id
-                            for(int i = 0; i < recipe.ingredients.Count; i++)
+                            for (int i = 0; i < recipe.ingredients.Count; i++)
                             {
                                 query = "INSERT INTO " + dbname + ".recipecontainsgroceryitem VALUES(" + recipe.ingredients[i].Item1 +
                                    ", " + recipe.recipeid + ", " + recipe.ingredients[i].Item2 + ");";
@@ -349,46 +349,45 @@ namespace GroceryStore.Models
                             ingredients.Add(ingredient);
                         }
                         dataReader.Close();
+                        //retrieve price of item from groceryitem table
+                        List<Tuple<int, int, double>> ingredientsForCart = new List<Tuple<int, int, double>>();
+                        for (int i = 0; i < ingredients.Count; i++)
+                        {
+                            query = "SELECT sellingprice FROM " + dbname + ".groceryitem WHERE sku=" + ingredients[i].Item1 + ";";
+                            command = new MySqlCommand(query, connection);
+                            dataReader = command.ExecuteReader();
+                            if (dataReader.Read())
+                            {
+                                double indvPrice = dataReader.GetDouble(0);
+                                double totalPrice = indvPrice * ingredients[i].Item2; //get total price customer is paying for this type of item
+                                Tuple<int, int, double> itemForCart = new Tuple<int, int, double>(ingredients[i].Item1, ingredients[i].Item2, totalPrice);
+                                ingredientsForCart.Add(itemForCart);
+                            }
+                            dataReader.Close();
+                        }
+
+                        //insert items into cart
+                        bool allItemsAdded = true;
+                        for (int i = 0; i < ingredientsForCart.Count; i++)
+                        {
+                            Response addItemToCartResponse = addItemtoCart(username, ingredientsForCart[i].Item1, ingredientsForCart[i].Item2,
+                               ingredientsForCart[i].Item3);
+                            if (!addItemToCartResponse.result)
+                            {
+                                allItemsAdded = false;
+                                message += "Could not add item with sku: " + ingredientsForCart[i].Item1.ToString() + "to cart. ";
+                            }
+                        }
+                        if (allItemsAdded)
+                        {
+                            result = true;
+                            message = "Recipe added to cart";
+                        }
                     }
                     else
                     {
                         dataReader.Close();
                         message = "Ingredients of recipe do not exist";
-                        return new Response(result, message); //return if there are no ingredients to add
-                    }
-                    //retrieve price of item from groceryitem table
-                    List<Tuple<int, int, double>> ingredientsForCart = new List<Tuple<int, int, double>>();
-                    for (int i = 0; i < ingredients.Count; i++)
-                    {
-                        query = "SELECT sellingprice FROM " + dbname + ".groceryitem WHERE sku=" + ingredients[i].Item1 + ";";
-                        command = new MySqlCommand(query, connection);
-                        dataReader = command.ExecuteReader();
-                        if (dataReader.Read())
-                        {
-                            double indvPrice = dataReader.GetDouble(0);
-                            double totalPrice = indvPrice * ingredients[i].Item2; //get total price customer is paying for this type of item
-                            Tuple<int, int, double> itemForCart = new Tuple<int, int, double>(ingredients[i].Item1, ingredients[i].Item2, totalPrice);
-                            ingredientsForCart.Add(itemForCart);
-                        }
-                        dataReader.Close();
-                    }
-
-                    //insert items into cart
-                    bool allItemsAdded = true;
-                    for (int i = 0; i < ingredientsForCart.Count; i++)
-                    {
-                        Response addItemToCartResponse = addItemtoCart(username, ingredientsForCart[i].Item1, ingredientsForCart[i].Item2,
-                           ingredientsForCart[i].Item3);
-                        if (!addItemToCartResponse.result)
-                        {
-                            allItemsAdded = false;
-                            message += "Could not add item with sku: " + ingredientsForCart[i].Item1.ToString() + "to cart. ";
-                        }
-                    }
-                    if (allItemsAdded)
-                    {
-                        result = true;
-                        message = "Recipe added to cart";
                     }
                 }
                 catch (MySqlException e)
@@ -405,7 +404,10 @@ namespace GroceryStore.Models
                 }
                 finally
                 {
-                    closeConnection();
+                    if (openConnection())
+                    {
+                        closeConnection();
+                    }
                 }
             }
             return new Response(result, message);
@@ -445,7 +447,7 @@ namespace GroceryStore.Models
 
                         query = @"INSERT INTO " + dbname + @".cart(username, sku, quantity, totalItemPrice) " +
                             @"VALUES('" + username + @"', '" + sku +
-                            @"', " + quantity + @"," + price +  @");";
+                            @"', " + quantity + @"," + price + @");";
 
 
                         command = new MySqlCommand(query, connection);
@@ -482,7 +484,7 @@ namespace GroceryStore.Models
         {
             Cart cartresult = new Cart();
             cartresult.cartcontents = new List<Tuple<int, string, int, double>>();
-             if(openConnection() == true)
+            if (openConnection() == true)
             {
                 try
                 {
@@ -496,12 +498,12 @@ namespace GroceryStore.Models
                         while (dataReader.Read())
                         {
                             int sku = dataReader.GetInt32(1);
-                            int quantity= dataReader.GetInt32(2);
+                            int quantity = dataReader.GetInt32(2);
                             string groceryitemname = dataReader.GetString(0);
                             double price = dataReader.GetDouble(3);
-                         
+
                             cartresult.AddtoCart(sku, groceryitemname, quantity, price);
-                            
+
                         }
                     }
                     dataReader.Close();
@@ -532,7 +534,7 @@ namespace GroceryStore.Models
             bool result = false;
             string message = "";
 
-            
+
             if (openConnection() == true)
             {
                 try
@@ -574,7 +576,7 @@ namespace GroceryStore.Models
         {
             bool result = false;
             string message = "";
-            if(openConnection() == true)
+            if (openConnection() == true)
             {
                 try
                 {
@@ -650,11 +652,11 @@ namespace GroceryStore.Models
             {
                 message = "Unable to connect to database";
             }
-                return new Response(result, message);
+            return new Response(result, message);
         }
     }
 
-    
+
 
 
     /// <summary>

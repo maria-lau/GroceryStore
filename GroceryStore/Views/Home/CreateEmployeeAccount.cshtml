@@ -1,59 +1,58 @@
 ﻿
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
-<div class="w3-container w3-display-middle" style="padding-top:150px;">
+<div class="w3-container w3-display-middle" style="margin-top:100px;">
     <h1 class="w3-animate-left">
         <a style=color:#785ff4>Create </a><a style=color:#1185f9>Employee </a><a style=color:#3ae2fc>Account</a>
     </h1>
-    <p id="hi"></p>
     @using (Html.BeginForm("CreateEmployeeAccountPost", "Home", FormMethod.Post))
     {
-    <div class="container" style="text-align:center;">
+        <div class="container" style="text-align:center;">
 
-        @Html.TextBox("usernameData", null, new { @placeholder = "Enter Employee's Username", required = "required" })<br />
+            @Html.TextBox("usernameData", null, new { @placeholder = "Enter Employee's Username", required = "required" })<br />
 
-        @Html.Password("passwordData", null, new { @placeholder = "Enter Employee's Password", required = "required" })<br />
+            @Html.Password("passwordData", null, new { @placeholder = "Enter Employee's Password", required = "required" })<br />
 
-        @Html.TextBox("firstName", null, new { @placeholder = "Enter Employee's First name", required = "required" })<br />
+            @Html.TextBox("firstName", null, new { @placeholder = "Enter Employee's First name", required = "required" })<br />
 
-        @Html.TextBox("lastName", null, new { @placeholder = "Enter Employee's Last Name", required = "required" })<br />
+            @Html.TextBox("lastName", null, new { @placeholder = "Enter Employee's Last Name", required = "required" })<br />
 
-        @Html.TextBox("street", null, new { @placeholder = "Enter Employee's Street Address", required = "required" })<br />
+            @Html.TextBox("street", null, new { @placeholder = "Enter Employee's Street Address", required = "required" })<br />
 
-        @Html.TextBox("city", null, new { @placeholder = "Enter Employee's City Name", required = "required" })<br />
+            @Html.TextBox("city", null, new { @placeholder = "Enter Employee's City Name", required = "required" })<br />
 
-        <select name="province" style="width: 100%; height: 40px; padding: 0px 20px; margin: 8px 0; display: inline-block;border: 1px solid #ccc; box-sizing: border-box;">
-            <option value="Alberta">Alberta</option>
-            <option value="British Columbia">British Columbia</option>
-            <option value="Manitoba">Manitoba</option>
-            <option value="New Brunswick">New Brunswick</option>
-            <option value="Newfoundland">Newfoundland</option>
-            <option value="Northwest Territories">Northwest Territories</option>
-            <option value="Nova Scotia">Nova Scotia</option>
-            <option value="Nunavut">Nunavut</option>
-            <option value="Ontario">Ontario</option>
-            <option value="Prince Edward Island">Prince Edward Island</option>
-            <option value="Quebec">Quebec</option>
-            <option value="Saskatchewan">Saskatchewan</option>
-            <option value="Yukon">Yukon</option>
-        </select>
+            <select name="province" style="width: 100%; height: 40px; padding: 0px 20px; margin: 8px 0; display: inline-block;border: 1px solid #ccc; box-sizing: border-box;">
+                <option value="Alberta">Alberta</option>
+                <option value="British Columbia">British Columbia</option>
+                <option value="Manitoba">Manitoba</option>
+                <option value="New Brunswick">New Brunswick</option>
+                <option value="Newfoundland">Newfoundland</option>
+                <option value="Northwest Territories">Northwest Territories</option>
+                <option value="Nova Scotia">Nova Scotia</option>
+                <option value="Nunavut">Nunavut</option>
+                <option value="Ontario">Ontario</option>
+                <option value="Prince Edward Island">Prince Edward Island</option>
+                <option value="Quebec">Quebec</option>
+                <option value="Saskatchewan">Saskatchewan</option>
+                <option value="Yukon">Yukon</option>
+            </select>
 
-        @Html.TextBox("postalCode", null, new { @placeholder = "Enter Employee's Postal Code", required = "required" })<br />
+            @Html.TextBox("postalCode", null, new { @placeholder = "Enter Employee's Postal Code", required = "required" })<br />
 
-        @Html.TextBox("emailData", null, new { @placeholder = "Enter Employee's E-Mail Address", required = "required" })<br />
+            @Html.TextBox("emailData", null, new { @placeholder = "Enter Employee's E-Mail Address", required = "required" })<br />
 
-        @Html.TextBox("phoneData", null, new { @placeholder = "Enter Employee's Phone Number", required = "required" })<br />
+            @Html.TextBox("phoneData", null, new { @placeholder = "Enter Employee's Phone Number", required = "required" })<br />
 
-        @Html.TextBox("sin", null, new { @placeholder = "Enter Employee's SIN", required = "required" })<br />
+            @Html.TextBox("sin", null, new { @placeholder = "Enter Employee's SIN", required = "required" })<br />
 
-        @Html.TextBox("startdate", null, new { @placeholder = "Enter Employee's Start Date", required = "required" })<br />
+            @Html.TextBox("startdate", null, new { @placeholder = "Enter Employee's Start Date", required = "required" })<br />
 
-        @Html.TextBox("hourlywage", null, new { @placeholder = "Enter Employee's Hourly Wage", required = "required" })<br />
+            @Html.TextBox("hourlywage", null, new { @placeholder = "Enter Employee's Hourly Wage", required = "required" })<br />
 
-        <br />
-    </div>
-        <div style="text-align:center;">
-            <input type="submit" style="float: none; background-color: #1185f9; color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 250px;" value="Create Employee Account" />
+            <br />
+            <div style="text-align:center;">
+                <input type="submit" style="float: none; background-color: #1185f9; color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 250px;" value="Create Employee Account" />
+            </div>
         </div>
     }
 </div>

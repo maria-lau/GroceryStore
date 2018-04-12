@@ -687,16 +687,15 @@ namespace GroceryStore.Controllers
         public ActionResult addRecipeToCart(int recipeid)
         {
             GroceryDatabase db = GroceryDatabase.getInstance();
-            //Response addreciperesponse = db.addRecipeToCart(Globals.getUser(), recipeid);
-            //if (addreciperesponse.result)
-            //{
-            //    return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
-            //}
-            //else
-            //{
-            //    return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
-            //}
-            return View();
+            Response addreciperesponse = db.addRecipeToCart(Globals.getUser(), recipeid);
+            if (addreciperesponse.result)
+            {
+                return RedirectToAction("ViewCart", new { itemoperation = 1, message = addreciperesponse.response });
+            }
+            else
+            {
+                return RedirectToAction("Recipes", new { itemoperation = 1, message = addreciperesponse.response });
+            }
         }
     }
 }
