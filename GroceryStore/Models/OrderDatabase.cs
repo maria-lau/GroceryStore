@@ -54,8 +54,8 @@ namespace GroceryStore.Models
                         for(int i = 0; i < order.ordercontents.Count; i++)
                         {
                             string query = @"INSERT INTO " + dbname + @".order " +
-                            @"VALUES('" + username + @"', '" + order.orderdate.Date.ToString("d") +
-                            @"', '" + newdeliverynum + @"');";
+                            @"VALUES(" + newordernum + @", " + order.ordercontents[i].Item1 + @", " + order.ordercontents[i].Item2 + @", '" +
+                                username + @"', " + order.orderdate.Date.ToString("d") + @"', " + deliverynumber + @", " + order.orderprice + @");";
                             MySqlCommand command = new MySqlCommand(query, connection);
                             command.ExecuteNonQuery();
                         }                    
