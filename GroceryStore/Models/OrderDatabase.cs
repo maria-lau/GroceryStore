@@ -187,7 +187,7 @@ namespace GroceryStore.Models
                     //SELECT username, orderid, orderdate, orderprice, orderdb.order.deliveryid, employeetodeliver, delivered
                     // FROM orderdb.`order`, orderdb.delivery WHERE orderdb.`order`.deliveryid = orderdb.delivery.deliveryid;
                     string query = "SELECT username, orderid, orderdate, orderprice, orderdb.order.deliveryid, employeetodeliver, delivered " +
-                        "FROM " + dbname + ".order, " + dbname + ".delivery WHERE" + dbname + ".order.deliveryid = " + dbname + ".delivery.deliveryid;";
+                        "FROM " + dbname + ".order, " + dbname + ".delivery WHERE " + dbname + ".order.deliveryid = " + dbname + ".delivery.deliveryid;";
                     MySqlCommand command = new MySqlCommand(query, connection);
                     MySqlDataReader dataReader = command.ExecuteReader();
 

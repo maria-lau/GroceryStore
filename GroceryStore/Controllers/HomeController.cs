@@ -326,6 +326,30 @@ namespace GroceryStore.Controllers
             return View();
         }
 
+        public ActionResult ViewAllOrders()
+        {
+            OrderDatabase db = OrderDatabase.getInstance();
+            List<Tuple<string, int, string, double, int, string, string>> allorders = db.getAllOrders();
+
+            if(allorders.Count > 0)
+            {
+                ViewBag.foundorders = true;
+                ViewBag.orderlist = allorders;
+            }
+            else
+            {
+                ViewBag.foundorders = false;
+            }
+            return View();
+        }
+
+        public ActionResult ViewMyDeliveries()
+        {
+            OrderDatabase db = OrderDatabase.getInstance();
+
+            return View();
+        }
+
         public ActionResult addToCart(int quantity, int sku, double price)
         {
             GroceryDatabase db = GroceryDatabase.getInstance();
@@ -423,8 +447,15 @@ namespace GroceryStore.Controllers
                 Response submitorderresponse = orderdb.placeOrder(Globals.getUser(), neworder);
                 if (submitorderresponse.result)
                 {
-                    // add code to clear cart 
-                    return RedirectToAction("ViewCart", new { itemoperation = 1, message = submitorderresponse.response });
+                    Response clearcartresponse = db.clearCart(Globals.getUser());
+                    if (clearcartresponse.result)
+                    {
+                        return RedirectToAction("ViewCart", new { itemoperation = 1, message = submitorderresponse.response });
+                    }
+                    else
+                    {
+                        return RedirectToAction("ViewCart", new { itemoperation = 2, message = clearcartresponse.response });
+                    }
                 }
                 else
                 {
