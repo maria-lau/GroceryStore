@@ -197,6 +197,66 @@ namespace GroceryStore.Models
             return userDeliveries;
         }
 
+        public List<Tuple<int, string, string, string, string>> viewAllDeliveries()
+        {
+            List<Tuple<int, string, string, string, string>> allDeliveries = new List<Tuple<int, string, string, string, string>>();
+
+            if(openConnection() == true)
+            {
+                try
+                {
+                    string query = "SELECT * FROM " + dbname + ".delivery;";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            int deliveryid = dataReader.GetInt32(0);
+                            string plannedDate = dataReader.GetString(1);
+                            string actualDate;
+                            if (dataReader.IsDBNull(2))
+                            {
+                                actualDate = "N/A";
+                            }
+                            else
+                            {
+                                actualDate = dataReader.GetString(2);
+                            }
+                            string delivered = dataReader.GetString(3);
+                            string employee = dataReader.GetString(4);
+
+                            Tuple<int, string, string, string, string> delivery = new Tuple<int, string, string, string, string>(
+                                deliveryid, plannedDate, actualDate, delivered, employee);
+
+                            allDeliveries.Add(delivery);
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to view deliveries." +
+                        " Error :" + e.Number + e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to view deliveries." +
+                        " Error:" + e.Message);
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+            return allDeliveries;
+        }
+
         //Let employee confirm their devliery
         public Response confirmDelivery(string username, int deliveryid)
         {
