@@ -191,7 +191,92 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }
 
-           
+        public Response insertRecipe(Recipe recipe)
+        {
+            bool result = false;
+            string message = "";
+
+            if(openConnection() == true)
+            {
+                try
+                {
+                    //Check if recipeid is unique
+                    string query = "SELECT * FROM " + dbname + ".recipe WHERE recipeid=" + recipe.recipeid + ";";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+                    if (dataReader.HasRows)
+                    {
+                        message = "Recipe with entered recipeid already exists, please enter a new id.";
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        //check if SKU's of ingredients exist
+                        bool AllSkuExist = true;
+                        List<int> notFoundItems = new List<int>();
+                        for(int i = 0; i < recipe.ingredients.Count; i++)
+                        {
+                            query = "SELECT * FROM " + dbname + ".groceryitem WHERE sku=" + recipe.ingredients[i].Item1 + ";";
+                            command = new MySqlCommand(query, connection);
+                            dataReader = command.ExecuteReader();
+
+                            if (!dataReader.HasRows)
+                            {
+                                AllSkuExist = false;
+                                notFoundItems.Add(recipe.ingredients[i].Item1);
+                            }
+                            dataReader.Close();
+                        }
+                        if (!AllSkuExist)
+                        {
+                            for (int i = 0; i < notFoundItems.Count; i++)
+                            {
+                                message += "SKU: " + notFoundItems[i].ToString() + " does not exist. ";
+                            }
+                        }
+                        else
+                        {
+                            //enter recipeid, instructinos, and timerequired into recipe
+                            query = "INSERT INTO " + dbname + ".recipe VALUES(" + recipe.recipeid + @", '" + recipe.instructions + "', " +
+                                recipe.timerequired + ");";
+
+                            command = new MySqlCommand(query, connection);
+                            command.ExecuteNonQuery();
+
+                            //enter SKU and quantity pairs into recipecontainsgroceryitem with the recipe id
+                            for(int i = 0; i < recipe.ingredients.Count; i++)
+                            {
+                                query = "INSERT INTO " + dbname + ".recipecontainsgroceryitems VALUES(" + recipe.ingredients[i].Item1 +
+                                   ", " + recipe.recipeid + ", " + recipe.ingredients[i].Item2 + ");";
+                                command = new MySqlCommand(query, connection);
+                                command.ExecuteNonQuery();
+
+                            }
+                            result = true;
+                            message = "Recipe has been created.";
+                        }
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to create new recipe" +
+                        " Error :" + e.Number + e.Message);
+                    message = e.Message;
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to create new recipe" +
+                        " Error:" + e.Message);
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+
+            return new Response(result, message);
+        }   
         
 
         public Response addItemtoCart(string username, int sku, int quantity, double price)
