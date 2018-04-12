@@ -13,7 +13,6 @@ namespace GroceryStore.Controllers
         {
             ViewBag.Message = "This is a a web application created by CPSC 471 - Database Management Systems - students:" +
                                 " Maria Lau, Sara Li & Juan Nieto as their final project.";
-
             return View();
         }
 
@@ -341,7 +340,14 @@ namespace GroceryStore.Controllers
 
                 OrderDatabase orderdb = OrderDatabase.getInstance();
                 Response submitorderresponse = orderdb.placeOrder(Globals.getUser(), neworder);
-                
+                if (submitorderresponse.result)
+                {
+                    return RedirectToAction("ViewCart", new { itemoperation = 1, message = submitorderresponse.response });
+                }
+                else
+                {
+                    return RedirectToAction("ViewCart", new { itemoperation = 2, message = submitorderresponse.response });
+                }
 
             }
        }

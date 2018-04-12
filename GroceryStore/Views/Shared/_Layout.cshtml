@@ -27,12 +27,16 @@
                     {
                         <li>@Html.ActionLink("View Employees", "ViewEmployees", "Home")</li>
                     }
+                    @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
+                    {
+                        <li>@Html.ActionLink("Shop", "Shop", "Home")</li>
+                    }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
                     {
-                        <li style="padding-top: 15px; padding-bottom:15px;line-height: 20px;">Logged in as: @GroceryStore.Models.Globals.getUser()    </li>
-                        <li>@Html.ActionLink("Shop", "Shop", "Home")</li>
+                        <li style="padding-top: 15px; padding-bottom:15px;line-height: 20px;">Logged in as: @GroceryStore.Models.Globals.getUser() </li>
+                        <li>@Html.ActionLink("My Orders", "ViewOrders", "Home")</li>
                         <li><a href='@Url.Action("ViewCart", "Home")'><img src="http://www.freepngimg.com/download/cart/8-2-cart-picture-thumb.png" height="25" width="25" /></a></li>
                         <li>@Html.ActionLink("Logout", "LogOut", "Home")</li>
                     }
