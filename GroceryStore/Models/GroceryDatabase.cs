@@ -278,6 +278,93 @@ namespace GroceryStore.Models
             return new Response(result, message);
         }   
         
+        public Response addRecipeToCart(string username, int recipeid)
+        {
+            bool result = false;
+            string message = "";
+            List<Tuple<int, int>> ingredients = new List<Tuple<int, int>>();
+            if(openConnection() == true)
+            {
+                try
+                {
+                    //retrieve recipe ingredients
+                    string query = "SELECT sku, quantity FROM " + dbname + ".recipecontainsgroceryitem WHERE recipeid=" + recipeid + ";";
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader dataReader = command.ExecuteReader();
+
+                    if (dataReader.HasRows)
+                    {
+                        while (dataReader.Read())
+                        {
+                            int sku = dataReader.GetInt32(0);
+                            int qty = dataReader.GetInt32(1);
+                            Tuple<int, int> ingredient = new Tuple<int, int>(sku, qty);
+                            ingredients.Add(ingredient);
+                        }
+                        dataReader.Close();
+                    }
+                    else
+                    {
+                        dataReader.Close();
+                        message = "Ingredients of recipe do not exist";
+                        return new Response(result, message); //return if there are no ingredients to add
+                    }
+                    //retrieve price of item from groceryitem table
+                    List<Tuple<int, int, double>> ingredientsForCart = new List<Tuple<int, int, double>>();
+                    for(int i = 0; i < ingredients.Count; i++)
+                    {
+                        query = "SELECT sellingprice FROM " + dbname + ".groceryitem WHERE sku=" + ingredients[i].Item1 + ";";
+                        command = new MySqlCommand(query, connection);
+                        dataReader = command.ExecuteReader();
+                        if (dataReader.Read())
+                        {
+                            double indvPrice = dataReader.GetDouble(0);
+                            double totalPrice = indvPrice * ingredients[i].Item2; //get total price customer is paying for this type of item
+                            Tuple<int, int, double> itemForCart = new Tuple<int, int, double>(ingredients[i].Item1, ingredients[i].Item2, totalPrice);
+                            ingredientsForCart.Add(itemForCart);
+                        }
+                        dataReader.Close();
+                    }
+
+                    //insert items into cart
+                    bool allItemsAdded = true;
+                    for(int i = 0; i < ingredientsForCart.Count; i++)
+                    {
+                        Response addItemToCartResponse = addItemtoCart(username, ingredientsForCart[i].Item1, ingredientsForCart[i].Item2,
+                           ingredientsForCart[i].Item3);
+                        if (!addItemToCartResponse.result)
+                        {
+                            allItemsAdded = false;
+                            message += "Could not add item with sku: " + ingredientsForCart[i].Item1.ToString() + "to cart. ";
+                        }
+                    }
+                    if (allItemsAdded)
+                    {
+                        result = true;
+                        message = "Recipe added to cart";
+                    }
+                }
+                catch (MySqlException e)
+                {
+                    Debug.consoleMsg("Unable to add recipe to cart." +
+                        " Error :" + e.Number + e.Message);
+                    message = e.Message;
+                }
+                catch (Exception e)
+                {
+                    Debug.consoleMsg("Unable to add recipe to cart." +
+                        " Error:" + e.Message);
+                    message = e.Message;
+                }
+                finally
+                {
+                    closeConnection();
+                }
+            }
+
+            return new Response(result, message);
+
+        }
 
         public Response addItemtoCart(string username, int sku, int quantity, double price)
         {
