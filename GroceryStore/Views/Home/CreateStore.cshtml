@@ -3,24 +3,18 @@
 
 <div class="w3-container w3-display-middle">
     <h1 class="w3-animate-left">
-        <a style=color:#785ff4>Create </a><a style=color:#1185f9>Customer </a><a style=color:#3ae2fc>Account</a>
+        <a style=color:#785ff4>Add </a><a style=color:#1185f9>New </a><a style=color:#3ae2fc>Store</a>
     </h1>
     <p id="hi"></p>
-    @using (Html.BeginForm("CreateAccountPost", "Home", FormMethod.Post))
+    @using (Html.BeginForm("CreateStorePost", "Home", FormMethod.Post))
     {
     <div class="container" style="text-align:center;">
 
-        @Html.TextBox("usernameData", null, new { @placeholder = "Enter Username", required = "required"})<br />
+        @Html.TextBox("storeid", null, new { @placeholder = "Enter Store ID", required = "required" })<br />
 
-        @Html.Password("passwordData", null, new { @placeholder = "Enter Password", required = "required" })<br />
+        @Html.TextBox("street", null, new { @placeholder = "Enter Street", required = "required" })<br />
 
-        @Html.TextBox("firstName", null, new { @placeholder = "Enter First name", required = "required" })<br />
-
-        @Html.TextBox("lastName", null, new { @placeholder = "Enter Last Name", required = "required" })<br />
-
-        @Html.TextBox("street", null, new { @placeholder = "Enter Street Address", required = "required" })<br />
-
-        @Html.TextBox("city", null, new { @placeholder = "Enter City Name", required = "required" })<br />
+        @Html.TextBox("city", null, new { @placeholder = "Enter City", required = "required" })<br />
 
         <select name="province" style="width: 100%; height: 40px; padding: 0px 20px; margin: 8px 0; display: inline-block;border: 1px solid #ccc;box-sizing: border-box;">
             <option value="Alberta">Alberta</option>
@@ -39,18 +33,16 @@
         </select>
 
         @Html.TextBox("postalCode", null, new { @placeholder = "Enter Postal Code", required = "required" })<br />
-
-        @Html.TextBox("emailData", null, new { @placeholder = "Enter E-Mail Address", required = "required" })<br />
-
-        @Html.TextBox("phoneData", null, new { @placeholder = "Enter Phone Number", required = "required" })<br />
+       
+        @Html.TextBox("phone", null, new { @placeholder = "Enter Store Phone Number", required = "required" })<br />
 
         <br />
     </div>
         <div style="text-align:center;">
-            <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 200px;" value="Create Account" />
+            <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 200px;" value="Add Store" />
         </div>
     }
-    </div>
+</div>
 
 <style>
 
@@ -72,7 +64,7 @@
         }
 
         /* Full-width inputs */
-        input[type=text], input[type=password], input[type=tel], input[type=email]{
+        input[type=text], input[type=password], input[type=tel], input[type=email] {
             width: 100%;
             padding: 12px 20px;
             margin: 8px 0;
@@ -80,7 +72,7 @@
             border: 1px solid #ccc;
             box-sizing: border-box;
         }
-       
+
 
 
     /* Add padding to containers */

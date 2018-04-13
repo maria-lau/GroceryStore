@@ -1,0 +1,142 @@
+﻿
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
+
+
+<div class="w3-container w3-display-middle" style="padding-top:150px;">
+    <h1 class="w3-animate-left">
+        <a style=color:#785ff4>Your </a><a style=color:#1185f9>Cart </a><a style=color:#3ae2fc>Contents</a>
+        <br />
+    </h1>
+    <br /> <br />
+    <div style="text-align:left; padding-left:300px;">
+        @if (ViewBag.EmptyCart == false)
+        {
+            foreach (Tuple<int, string, int, double> item in ViewBag.cartlist)
+            {
+                <div style="width:300px;display: inline-block;">
+                    <p>@item.Item2 (Item SKU:@item.Item1)</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    <p>Quantity: @item.Item3 in cart</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    <p>Price: @item.Item4.ToString("C")  (@((item.Item4 / item.Item3).ToString("C")) each)</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    @using (Html.BeginForm("deleteFromCart", "Home", FormMethod.Post))
+                    {
+                        <input type="hidden" value="@item.Item1" name="sku" />
+                        <input type="submit" style="float: none; background-color: #1185f9;color: white; padding: 10px 15px; margin: 8px 0; border: none; cursor: pointer; width: 220px;" value="Remove Item From Cart" />
+                    }
+                </div>
+                <br />
+                <br />
+            }
+
+            <br /><br />
+            <div style="text-align:right; padding-right:200px;">
+                @using (Html.BeginForm("SubmitOrder", "Home", FormMethod.Post))
+                {
+                    <p>
+                        (Free Delivery For Orders Over $30!)<br />
+                        Cart SubTotal: @ViewBag.carttotal.ToString("C")
+                    </p>
+                    if (ViewBag.carttotal > 30)
+                    {
+                        <p>Delivery Fee: $0.00<br />Tax(5%): @((ViewBag.carttotal * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal + (ViewBag.carttotal * 0.05)).ToString("C"))</p>
+                        <input type="hidden" value="@(ViewBag.carttotal + (ViewBag.carttotal * 0.05))" name="finalcartprice" />
+                    }
+                    else
+                    {
+                        <p>Delivery Fee: $5.00<br />Tax(5%): @(((ViewBag.carttotal + 5) * 0.05).ToString("C"))<br />Cart Total:  @((ViewBag.carttotal + 5 + ((ViewBag.carttotal + 5) * 0.05)).ToString("C"))</p>
+                        <input type="hidden" value="@(ViewBag.carttotal+5+((ViewBag.carttotal+5) * 0.05))" name="finalcartprice" />
+                    }
+                    <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 150px;height: 40px;" value="Submit Order" />
+                }
+            </div>
+        }
+        else
+        {
+            <p>You currently have nothing in your cart.</p>
+        }
+    </div>
+</div>
+
+
+<style>
+
+    form {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0 auto;
+    }
+
+    input, textarea {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        width: 700px;
+        height: 40px;
+    }
+
+        input:focus, textarea:focus {
+            border-color: aquamarine;
+        }
+
+        /* Full-width inputs */
+        input[type=text], input[type=password] {
+            width: 20px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+    /* Add a hover effect for buttons */
+    button:hover {
+        opacity: 0.8;
+    }
+
+    /* Add padding to containers */
+    .container {
+        padding: 16px;
+    }
+
+    /* The "Forgot password" text */
+    span.psw {
+        float: right;
+        padding-top: 16px;
+    }
+
+    a:hover {
+        color: #634cf7;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    h1 {
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+    }
+
+    p {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p3 {
+        position: absolute;
+        bottom: 100px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>

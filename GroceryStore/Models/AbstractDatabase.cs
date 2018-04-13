@@ -47,7 +47,7 @@ namespace GroceryStore.Models
                 }
                 catch (MySqlException e)
                 {
-                    if (e.Number == 1007)//Database already exists, no need to continure further
+                    if (e.Number == 1007)//Database already exists, no need to continue further
                     {
                         Debug.consoleMsg("Database already exists.");
                         closeConnection();

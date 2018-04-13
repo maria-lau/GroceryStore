@@ -1,0 +1,117 @@
+﻿
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
+
+<div class="w3-container w3-display-middle" style="padding-top:150px;">
+    <h1 class="w3-animate-left">
+        <a style=color:#785ff4>Our </a><a style=color:#1185f9>Store </a><a style=color:#3ae2fc>Locations</a>
+        <br />
+    </h1>
+    <br /> <br />
+    <div style="text-align:center;">
+        @if (ViewBag.foundStores == true)
+        {
+            foreach (string store in ViewBag.storelist)
+            {
+                <div style="width:200px; display: inline-block;">
+                    <p>@Html.Raw(store)</p>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No Stores in the Database.</p>
+        }
+    </div>
+    <br /> <br />
+    <div style="text-align:center; font-family: 'Montserrat', sans-serif;">
+        @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
+        {
+            <a style="float: none;background-color: #785ff4;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;" href="/Home/CreateStore">Add New Store</a>
+            <br /> <br /><br/><br />
+            using (Html.BeginForm("DeleteStore", "Home", FormMethod.Post))
+            {
+                 @Html.TextBox("storeid", null, new { @placeholder = "Enter ID of Store to be Deleted", required = "required" })<br />
+            <input type="submit" style="float:none;background-color: #1185f9;color: white;padding: 10px 15px;margin: 8px 0;border: none;cursor: pointer;width: 280px;height: 40px;"value="Delete Store"/>
+             }
+        }
+    </div>
+</div>
+
+
+<style>
+
+    form {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0 auto;
+    }
+
+    input, textarea {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        width: 700px;
+        height: 40px;
+    }
+
+        input:focus, textarea:focus {
+            border-color: aquamarine;
+        }
+
+        /* Full-width inputs */
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+     /* Add a hover effect for buttons */
+     button:hover {
+        opacity: 0.8;
+     }
+
+    /* Add padding to containers */
+    .container {
+        padding: 16px;
+    }
+
+    /* The "Forgot password" text */
+    span.psw {
+        float: right;
+        padding-top: 16px;
+    }
+
+    a:hover {
+        color: #634cf7;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    h1 {
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+    }
+
+    p {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p3 {
+        position: absolute;
+        bottom: 100px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>

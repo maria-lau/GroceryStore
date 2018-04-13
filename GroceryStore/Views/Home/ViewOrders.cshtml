@@ -1,0 +1,124 @@
+﻿
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400i,900" rel="stylesheet">
+
+
+<div class="w3-container w3-display-middle" style="padding-top:150px;">
+    <h1 class="w3-animate-left">
+        <a style=color:#785ff4>My </a><a style=color:#1185f9>Order </a><a style=color:#3ae2fc>History</a>
+        <br />
+    </h1>
+    <br /> <br />
+    <div style="text-align:left; padding-left:300px;">
+        @if (ViewBag.foundorders == true)
+        {
+            foreach (Tuple<int, string, double, string> item in ViewBag.orderlist)
+            {
+                <div style="width:150px;display: inline-block;">
+                    <p>Order ID: @item.Item1</p>
+                </div>
+                <div style="width:220px;display: inline-block;">
+                    <p>Order Date: @item.Item2</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    <p>Order Price: @item.Item3.ToString("C")</p>
+                </div>
+                <div style="width:200px;display: inline-block;">
+                    @if(item.Item4 == "y")
+                    {
+                        <p>Order Delivered?: Yes</p>
+                    }
+                    else
+                    {
+                         <p>Order Delivered?: No</p>
+                    }
+                </div>
+                <br />
+                <br />
+            }
+        }
+        else
+        {
+            <p>According to our records, you have never ordered from Fresh Direct. :( </p>
+        }
+    </div>
+    <br /><br />
+</div>
+
+
+<style>
+
+    form {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0 auto;
+    }
+
+    input, textarea {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        width: 700px;
+        height: 40px;
+    }
+
+        input:focus, textarea:focus {
+            border-color: aquamarine;
+        }
+
+        /* Full-width inputs */
+        input[type=text], input[type=password] {
+            width: 20px;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+    /* Add a hover effect for buttons */
+    button:hover {
+        opacity: 0.8;
+    }
+
+    /* Add padding to containers */
+    .container {
+        padding: 16px;
+    }
+
+    /* The "Forgot password" text */
+    span.psw {
+        float: right;
+        padding-top: 16px;
+    }
+
+    a:hover {
+        color: #634cf7;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    h1 {
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+    }
+
+    p {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    p3 {
+        position: absolute;
+        bottom: 100px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+    }
+</style>

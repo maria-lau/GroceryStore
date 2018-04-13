@@ -22,16 +22,32 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav" style="font-family: 'MontSerrat'; font-weight: 600; font-size: 14px; color: white;">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    <li>@Html.ActionLink("Stores", "ViewStores", "Home")</li>
                     @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "manager")
                     {
-                      <li>@Html.ActionLink("View Employees", "ViewEmployees", "Home")</li>
+                        <li>@Html.ActionLink("View All Users", "ViewAllUsers", "Home")</li>
+                        <li>@Html.ActionLink("View All Orders", "ViewAllOrders", "Home")</li>
+                        <li>@Html.ActionLink("View Deliveries", "ViewAllDeliveries", "Home")</li>
+                    }
+                    @if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "employee")
+                    {
+                        <li>@Html.ActionLink("My Deliveries", "ViewMyDeliveries", "Home")</li>
+                    }
+                    @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
+                    {
+                        <li>@Html.ActionLink("Shop", "Shop", "Home")</li>
+                        <li>@Html.ActionLink("Recipes", "Recipes", "Home")</li>
                     }
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     @if (@GroceryStore.Models.Globals.isLoggedIn() == true)
                     {
-                        <li style="padding-top: 15px; padding-bottom:15px;line-height: 20px;">Logged in as: @GroceryStore.Models.Globals.getUser()    </li>
+                        <li style="padding-top: 15px; padding-bottom:15px;line-height: 20px;">Logged in as: @GroceryStore.Models.Globals.getUser() </li>
+                        if (@GroceryStore.Models.Globals.getUserType(@GroceryStore.Models.Globals.getUser()) == "customer")
+                        {
+                            <li>@Html.ActionLink("My Orders", "ViewOrders", "Home")</li>
+                            <li><a href='@Url.Action("ViewCart", "Home")'><img src="http://www.freepngimg.com/download/cart/8-2-cart-picture-thumb.png" height="25" width="25" /></a></li>
+                        }
                         <li>@Html.ActionLink("Logout", "LogOut", "Home")</li>
                     }
                     else
@@ -46,8 +62,8 @@
         @RenderBody()
     </div>
     <footer id="footerContent" class="site-footer">
-            <hr />
-            &copy; @DateTime.Now.Year - Created by M.Lau, S.Li & J.Nieto
+        <hr />
+        &copy; @DateTime.Now.Year - Created by M.Lau, S.Li & J.Nieto
     </footer>
 
     @Scripts.Render("~/bundles/jquery")
