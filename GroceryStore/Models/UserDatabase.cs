@@ -236,6 +236,7 @@ namespace GroceryStore.Models
                     if (!insertnewuser.result)
                     {
                         // insert failed
+                        connection.Close();
                         return new Response(result, "failure to insert new user account.");
                     }
 
@@ -250,6 +251,7 @@ namespace GroceryStore.Models
                     if (!insertnewemployee.result)
                     {
                         // insert failed
+                        connection.Close();
                         return new Response(result, "failure to insert new employee account.");
                     }
 
@@ -283,7 +285,10 @@ namespace GroceryStore.Models
                 }
                 finally
                 {
-                    closeConnection();
+                    if (openConnection())
+                    {
+                        closeConnection();
+                    }
                 }
             }
             else

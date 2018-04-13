@@ -16,15 +16,15 @@ namespace GroceryStore.Controllers
             return View();
         }
 
-        public ActionResult ViewStores(int storeDeleted = 0)
+        public ActionResult ViewStores(int itemoperation = 0, string message="")
         {
-            if (storeDeleted == 1)
+            if (itemoperation == 1)
             {
-                Response.Write("<script>alert('Successfully Deleted Store.')</script>");
+                Response.Write("<script>alert('" + message + "')</script>");
             }
-            else if(storeDeleted == 2)
+            else if (itemoperation == 2)
             {
-                Response.Write("<script>alert('The store could not be deleted. Store ID does not exist.')</script>");
+                Response.Write("<script>alert('" + message + "')</script>");
             }
 
             ViewBag.Message = "Fresh Direct Locations";
@@ -58,11 +58,11 @@ namespace GroceryStore.Controllers
             Response deletestoreresponse = db.deleteStore(storeid);
             if (deletestoreresponse.result)
             {   
-                return RedirectToAction("ViewStores", new { storeDeleted = 1 });
+                return RedirectToAction("ViewStores", new { itemoperation = 1, message = deletestoreresponse.response });
             }
             else
             {
-                return RedirectToAction("ViewStores", new { storeDeleted = 2 });
+                return RedirectToAction("ViewStores", new { itemoperation = 2, message = deletestoreresponse.response });
             }
         }
 
@@ -122,7 +122,6 @@ namespace GroceryStore.Controllers
             //Check if account created successfully
             if (createaccountresponse.result)
             {
-                Globals.setUser(newaccount.username);
                 Response.Write("<script>alert('" + createaccountresponse.response + "')</script>");
                 return View("Index");
             }
@@ -160,7 +159,7 @@ namespace GroceryStore.Controllers
             if (createemployeeaccountresponse.result)
             {
                 Response.Write("<script>alert('" + createemployeeaccountresponse.response + "')</script>");
-                return View("ViewAllUsers");
+                return View("Index");
             }
             else
             {
@@ -198,12 +197,26 @@ namespace GroceryStore.Controllers
             if (createmanageraccountresponse.result)
             {
                 Response.Write("<script>alert('" + createmanageraccountresponse.response + "')</script>");
-                return View("ViewAllUsers");
+                return View("Index");
             }
             else
             {
                 Response.Write("<script>alert('" + createmanageraccountresponse.response + "')</script>");
                 return View("CreateManagerAccount");
+            }
+        }
+
+        public ActionResult DeleteUser(string username)
+        {
+            UserDatabase db = UserDatabase.getInstance();
+            Response deleteuserresponse = db.deleteUserAccount(username);
+            if (deleteuserresponse.result)
+            {
+                return RedirectToAction("ViewAllUsers", new { itemoperation = 1, message = deleteuserresponse.response });
+            }
+            else
+            {
+                return RedirectToAction("ViewAllUsers", new { itemoperation = 2, message = deleteuserresponse.response });
             }
         }
 
@@ -227,8 +240,17 @@ namespace GroceryStore.Controllers
             return View();
         }
 
-        public ActionResult ViewAllUsers()
+        public ActionResult ViewAllUsers(int itemoperation=0, string message="")
         {
+            if (itemoperation == 1)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+            else if (itemoperation == 2)
+            {
+                Response.Write("<script>alert('" + message + "')</script>");
+            }
+
             UserDatabase db = UserDatabase.getInstance();
 
             // get customers
@@ -529,13 +551,11 @@ namespace GroceryStore.Controllers
 
             if (addstoreresponse.result)
             {
-                Response.Write("<script>alert('" + addstoreresponse.response + "')</script>");
-                return View("ViewStores");
+                return RedirectToAction("ViewStores", new { itemoperation = 1, message = addstoreresponse.response });
             }
             else
             {
-                Response.Write("<script>alert('" + addstoreresponse.response + "')</script>");
-                return View("CreateStore");
+                return RedirectToAction("CreateStore", new { itemoperation = 2, message = addstoreresponse.response });
             }
         }
 
