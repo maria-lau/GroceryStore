@@ -4,10 +4,6 @@ using System.Collections.Generic;
 
 namespace GroceryStore.Models
 {
-    /// <summary>
-    /// This class is used to manipulate and read the Authentication Service's database in a safe and consistent manner.
-    /// It follows the singleton design pattern, as only one instance of this class should ever be in existance at any given time.
-    /// </summary>
     public partial class UserDatabase : AbstractDatabase
     {
         public static int count = 0;
